@@ -1,4 +1,4 @@
 flask
 groq
-duckduckgo_search
 gunicorn
+duckduckgo_search
