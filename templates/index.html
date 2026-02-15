@@ -3,196 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>BGENG AI | Singularity</title>
+    <title>BGENG AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        body { background: #05070a; color: white; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
+        .app-wrapper { max-width: 800px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; background: #0a0c10; }
         
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        html, body { 
-            background-color: #05070a; 
-            color: white; 
-            font-family: 'Inter', sans-serif; 
-            margin: 0; padding: 0;
-            height: 100vh;
-            height: -webkit-fill-available;
-            overflow: hidden;
-        }
+        .chat-container { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
         
-        .app-wrapper {
-            max-width: 850px; /* Ukuran paling pas buat desktop biar gak kelebaran */
-            margin: 0 auto;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            background: #0a0c10;
-            position: relative;
-        }
-
-        /* Area Chat: Membatasi bubble agar tidak "meledak" lebarnya */
-        .chat-container { 
-            flex: 1;
-            overflow-y: auto; 
-            padding: 1.25rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-            scroll-behavior: smooth;
-            background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.05), transparent);
-        }
-
-        .chat-bubble {
-            animation: fadeIn 0.25s ease-out;
-            word-wrap: break-word;
-            max-width: 85%;
-            font-size: 0.92rem;
-            line-height: 1.6;
-            padding: 0.9rem 1.2rem;
-            position: relative;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .ai-bubble { 
-            background: #161b22; 
-            border: 1px solid rgba(255,255,255,0.08);
-            border-left: 4px solid #3b82f6;
-            border-radius: 4px 20px 20px 20px;
-            align-self: flex-start;
-            white-space: pre-wrap;
-            color: #e5e7eb;
-        }
-
-        .user-bubble { 
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            border-radius: 20px 20px 4px 20px; 
-            align-self: flex-end;
-            color: white;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
-        }
+        /* Bubble Fix: Biar gak meledak lebarnya */
+        .chat-bubble { max-width: 85%; padding: 0.8rem 1rem; font-size: 0.95rem; border-radius: 18px; line-height: 1.5; }
+        .ai-bubble { background: #161b22; align-self: flex-start; border-left: 4px solid #3b82f6; border-bottom-left-radius: 4px; color: #d1d5db; }
+        .user-bubble { background: #2563eb; align-self: flex-end; border-bottom-right-radius: 4px; }
 
         /* Modern Input Group */
-        footer {
-            padding: 1.25rem;
-            background: #0d1117;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
-        }
-
-        .input-wrapper {
-            max-width: 700px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            background: #1f2937;
-            border-radius: 1.5rem;
-            padding: 0.4rem 0.6rem 0.4rem 1.2rem;
-            gap: 0.75rem;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .input-wrapper:focus-within {
-            border-color: #3b82f6;
-            background: #111827;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-        }
-
-        #user-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: white;
-            padding: 0.75rem 0;
-            outline: none;
-            font-size: 0.95rem;
-        }
-
-        /* Button Styles */
-        .icon-btn {
-            color: #9ca3af;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .icon-btn:hover { color: #3b82f6; }
-
-        .send-btn {
-            background: #2563eb;
-            width: 2.75rem;
-            height: 2.75rem;
-            border-radius: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            color: white;
-        }
-        .send-btn:active { transform: scale(0.92); background: #1d4ed8; }
-
-        /* Typing Dots */
-        .typing { display: flex; gap: 5px; padding: 12px 18px; width: fit-content; }
-        .dot { width: 6px; height: 6px; background: #3b82f6; border-radius: 50%; animation: bounce 1.4s infinite; }
-        .dot:nth-child(2) { animation-delay: 0.2s; }
-        .dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-
-        @media (max-width: 640px) {
-            .app-wrapper { border: none; }
-            .chat-bubble { max-width: 90%; }
-        }
+        footer { padding: 1rem; background: #0d1117; border-top: 1px solid #1f2937; }
+        .input-box { background: #1f2937; border-radius: 25px; padding: 5px 15px; display: flex; align-items: center; gap: 10px; }
+        input { flex: 1; background: transparent; border: none; outline: none; color: white; padding: 10px 0; font-size: 0.9rem; }
+        
+        /* Preview Gambar */
+        #preview-container { display: none; padding: 10px; background: #161b22; border-radius: 10px; margin-bottom: 10px; position: relative; width: fit-content; }
+        #image-preview { height: 60px; border-radius: 5px; border: 1px solid #3b82f6; }
+        .remove-img { position: absolute; top: -5px; right: -5px; background: red; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="app-wrapper">
-    <header class="p-4 flex justify-between items-center border-b border-white/5 bg-black/40 backdrop-blur-xl z-50">
+    <header class="p-4 border-b border-white/5 flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <div class="logo-box w-10 h-10 rounded-xl overflow-hidden border border-blue-500/30">
-                <img src="{{ url_for('static', filename='logo.jpg') }}" class="w-full h-full object-cover">
-            </div>
+            <img src="{{ url_for('static', filename='logo.jpg') }}" class="w-10 h-10 rounded-lg border border-blue-500/30">
             <div>
-                <h1 class="font-black italic uppercase tracking-tighter text-sm leading-none">BGENG <span class="text-blue-500">AI</span></h1>
-                <div class="flex items-center gap-1 mt-1">
-                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                    <p class="text-[7px] text-green-500 font-bold uppercase tracking-widest">SINGULARITY ACTIVE</p>
-                </div>
+                <h1 class="font-bold text-sm tracking-tighter">BGENG <span class="text-blue-500">AI</span></h1>
+                <p class="text-[7px] text-green-500 font-bold uppercase animate-pulse">Singularity Active</p>
             </div>
         </div>
-        <div class="flex gap-1">
-            <button onclick="clearChat()" class="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-red-400 transition-colors">
-                <i class="fas fa-trash-alt text-xs"></i>
-            </button>
-            <button class="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-blue-400 transition-colors">
-                <i class="fas fa-phone text-xs"></i>
-            </button>
-        </div>
+        <button onclick="location.reload()" class="text-gray-500 text-xs"><i class="fas fa-redo"></i></button>
     </header>
 
     <main id="chat-window" class="chat-container">
-        <div class="chat-bubble ai-bubble">
-            Hi Guys! Ini BGENG AI. Ada yang mau kita bedah bareng?
-        </div>
+        <div class="chat-bubble ai-bubble">Yo Guys! Kirim teks atau gambar, gue siap bedah!</div>
     </main>
 
     <footer>
-        <div class="input-wrapper">
-            <label for="img-input" class="icon-btn">
+        <div id="preview-container">
+            <img id="image-preview">
+            <div class="remove-img" onclick="removeImage()">×</div>
+        </div>
+        <div class="input-box">
+            <label class="text-gray-400 cursor-pointer hover:text-blue-400">
                 <i class="far fa-image"></i>
-                <input type="file" id="img-input" hidden accept="image/*">
+                <input type="file" id="image-input" hidden accept="image/*" onchange="previewImage(this)">
             </label>
-            
-            <input id="user-input" type="text" autocomplete="off" placeholder="Ask me anything...">
-            
-            <button onclick="sendMsg()" class="send-btn">
+            <input type="text" id="user-input" placeholder="Ask me anything, Guys..." autocomplete="off">
+            <button onclick="sendMsg()" class="text-blue-500 px-2 active:scale-90 transition-all">
                 <i class="fas fa-paper-plane"></i>
             </button>
         </div>
@@ -202,30 +67,45 @@
 <script>
     const chatWindow = document.getElementById('chat-window');
     const inputField = document.getElementById('user-input');
+    const imageInput = document.getElementById('image-input');
+    const previewContainer = document.getElementById('preview-container');
+    const previewImg = document.getElementById('image-preview');
 
-    inputField.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMsg(); });
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                previewContainer.style.display = 'block';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function removeImage() {
+        imageInput.value = "";
+        previewContainer.style.display = 'none';
+    }
 
     async function sendMsg() {
         const msg = inputField.value.trim();
-        if(!msg) return;
+        const file = imageInput.files[0];
+        if(!msg && !file) return;
 
-        appendBubble(msg, 'user');
+        appendBubble(msg || "Sent an image", 'user');
         inputField.value = '';
+        removeImage();
 
-        const typingId = showTyping();
+        const formData = new FormData();
+        formData.append("message", msg);
+        if(file) formData.append("image", file);
 
         try {
-            const res = await fetch('/chat', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: msg})
-            });
+            const res = await fetch('/chat', { method: 'POST', body: formData });
             const data = await res.json();
-            document.getElementById(typingId).remove();
             appendBubble(data.reply, 'ai');
-        } catch (error) {
-            if(document.getElementById(typingId)) document.getElementById(typingId).remove();
-            appendBubble("Waduh, koneksi matrix lagi glitch. Coba lagi, Guys!", 'ai');
+        } catch {
+            appendBubble("Glitch, guys!", 'ai');
         }
     }
 
@@ -234,24 +114,7 @@
         div.className = `chat-bubble ${role === 'ai' ? 'ai-bubble' : 'user-bubble'}`;
         div.innerText = text;
         chatWindow.appendChild(div);
-        chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
-    }
-
-    function showTyping() {
-        const id = 'typing-' + Date.now();
-        const div = document.createElement('div');
-        div.id = id;
-        div.className = 'ai-bubble typing chat-bubble';
-        div.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-        chatWindow.appendChild(div);
-        chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
-        return id;
-    }
-
-    function clearChat() {
-        if(confirm("Hapus semua obrolan, Guys?")) {
-            chatWindow.innerHTML = '<div class="chat-bubble ai-bubble">Memori dibersihin. Mulai dari nol lagi Guys!</div>';
-        }
+        chatWindow.scrollTo(0, chatWindow.scrollHeight);
     }
 </script>
 </body>
