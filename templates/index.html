@@ -3,91 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BGENG AI | Asisten</title>
+    <title>BGENG AI | Singularity</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #05070a; color: white; font-family: 'Inter', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
         
-        /* Bubble Chat Style */
-        .chat-container { height: calc(100vh - 180px); overflow-y: auto; padding-bottom: 20px; }
-        .ai-bubble { 
-            background: rgba(30, 41, 59, 0.5); 
-            border-left: 3px solid #3b82f6;
-            border-radius: 15px 15px 15px 2px;
-            white-space: pre-wrap; /* Jaga struktur bullet points */
-            line-height: 1.6;
+        body { 
+            background-color: #05070a; 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            overflow: hidden; 
+            height: 100vh;
         }
-        .user-bubble { 
-            background: #3b82f6; 
-            border-radius: 15px 15px 2px 15px; 
-            align-self: flex-end;
+        
+        /* Container Logic: Centering on Desktop, Full on Mobile */
+        .app-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid rgba(255,255,255,0.05);
+            border-right: 1px solid rgba(255,255,255,0.05);
+            background: rgba(10, 10, 10, 0.6);
         }
 
-        /* Mobile Fixes */
-        @media (max-width: 480px) {
-            header { padding: 15px !important; }
-            .logo-box { width: 45px !important; height: 45px !important; }
-            h1 { font-size: 1.1rem !important; }
-            .chat-bubble { font-size: 14px !important; max-width: 85% !important; }
+        .chat-container { 
+            flex: 1;
+            overflow-y: auto; 
+            scroll-behavior: smooth;
+            padding: 1.5rem;
         }
+
+        /* Bubble Animations */
+        .chat-bubble {
+            animation: fadeIn 0.3s ease-out;
+            word-wrap: break-word;
+            max-width: 85%;
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ai-bubble { 
+            background: rgba(30, 41, 59, 0.4); 
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-left: 4px solid #3b82f6;
+            border-radius: 4px 20px 20px 20px;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+
+        .user-bubble { 
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-radius: 20px 20px 4px 20px; 
+            align-self: flex-end;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Typing Animation */
+        .typing {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 16px;
+            width: fit-content;
+        }
+
+        .dot {
+            width: 6px; height: 6px;
+            background: #3b82f6;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Responsive Mobile Specific */
+        @media (max-width: 640px) {
+            .app-wrapper { border: none; }
+            .chat-bubble { max-width: 90%; font-size: 14px; }
+            header { padding: 1rem !important; }
+            .logo-box { width: 40px !important; height: 40px !important; }
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.3); border-radius: 10px; }
     </style>
 </head>
-<body class="flex flex-col h-screen">
+<body>
 
-<header class="p-6 flex justify-between items-center border-b border-white/5 bg-black/20 backdrop-blur-lg sticky top-0 z-50">
-    <div class="flex items-center gap-3">
-        <div class="logo-box w-14 h-14 rounded-xl overflow-hidden border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
-            <img src="{{ url_for('static', filename='logo.jpg') }}" class="w-full h-full object-cover">
+<div class="app-wrapper">
+    <header class="p-4 flex justify-between items-center border-b border-white/5 bg-black/40 backdrop-blur-xl z-50">
+        <div class="flex items-center gap-3">
+            <div class="logo-box w-12 h-12 rounded-xl overflow-hidden border border-blue-500/30 shadow-[0_0_20px_rgba(59,130,246,0.2)]">
+                <img src="{{ url_for('static', filename='logo.jpg') }}" class="w-full h-full object-cover">
+            </div>
+            <div>
+                <h1 class="font-black italic uppercase tracking-tighter text-lg leading-none">BGENG <span class="text-blue-500">AI</span></h1>
+                <div class="flex items-center gap-1 mt-1">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <p class="text-[9px] text-green-500 font-bold uppercase tracking-widest"></p>
+                </div>
+            </div>
         </div>
-        <div>
-            <h1 class="font-black italic uppercase tracking-tighter">BGENG <span class="text-blue-500">AI</span></h1>
-            <p class="text-[8px] text-green-500 font-bold uppercase tracking-widest">asisten eugg</p>
+        <div class="flex gap-2">
+            <button onclick="clearChat()" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-red-500/20 hover:border-red-500/50 transition-all group" title="Clear Chat">
+                <i class="fas fa-trash-alt text-gray-400 group-hover:text-red-400 text-sm"></i>
+            </button>
+            <button class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-blue-500/20 hover:border-blue-500/50 transition-all">
+                <i class="fas fa-phone text-blue-400 text-sm"></i>
+            </button>
         </div>
-    </div>
-    <button class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-        <i class="fas fa-phone text-blue-400"></i>
-    </button>
-</header>
+    </header>
 
-<main id="chat-window" class="chat-container flex flex-col gap-4 p-4">
+    <main id="chat-window" class="chat-container flex flex-col gap-4">
+        <div class="p-4 chat-bubble ai-bubble text-gray-100">
+            hi Guys! ini BGENG AI, Ada yang mau kita bedah bareng?
+        </div>
     </main>
 
-<footer class="p-4 bg-black/40 backdrop-blur-md border-t border-white/5">
-    <div class="max-w-4xl mx-auto flex gap-2">
-        <input id="user-input" type="text" placeholder="Type a message, literally..." 
-               class="flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 focus:outline-none focus:border-blue-500 transition-all">
-        <button onclick="sendMsg()" class="bg-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center hover:bg-blue-500">
-            <i class="fas fa-paper-plane"></i>
-        </button>
-    </div>
-</footer>
+    <footer class="p-4 bg-black/60 backdrop-blur-md border-t border-white/5">
+        <div class="max-w-3xl mx-auto flex gap-3">
+            <input id="user-input" type="text" autocomplete="off" placeholder="Ask me anything..." 
+                   class="flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500 transition-all text-sm">
+                <button onclick="sendMsg()" class="bg-blue-600 w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center hover:bg-blue-500 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-blue-500/20">
+                <i class="fas fa-paper-plane text-lg text-white"></i>
+            </button>
+        </div>
+    </footer>
+</div>
 
 <script>
+    const chatWindow = document.getElementById('chat-window');
+    const inputField = document.getElementById('user-input');
+
+    inputField.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendMsg();
+    });
+
     async function sendMsg() {
-        const input = document.getElementById('user-input');
-        const msg = input.value.trim();
+        const msg = inputField.value.trim();
         if(!msg) return;
 
         appendBubble(msg, 'user');
-        input.value = '';
+        inputField.value = '';
 
-        const res = await fetch('/chat', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({message: msg})
-        });
-        const data = await res.json();
-        appendBubble(data.reply, 'ai');
+        const typingId = showTyping();
+
+        try {
+            const res = await fetch('/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: msg})
+            });
+            const data = await res.json();
+            
+            document.getElementById(typingId).remove();
+            appendBubble(data.reply, 'ai');
+        } catch (error) {
+            if(document.getElementById(typingId)) document.getElementById(typingId).remove();
+            appendBubble("Waduh, koneksi matrix lagi glitch. Coba lagi, Guys!", 'ai');
+        }
     }
 
     function appendBubble(text, role) {
-        const win = document.getElementById('chat-window');
         const div = document.createElement('div');
-        div.className = `p-4 max-w-[80%] chat-bubble ${role === 'ai' ? 'ai-bubble' : 'user-bubble text-white'}`;
+        div.className = `p-4 chat-bubble ${role === 'ai' ? 'ai-bubble' : 'user-bubble text-white'}`;
+        
+        // Mempertahankan format teks (bullet points & line breaks)
+        div.style.whiteSpace = "pre-wrap";
         div.innerText = text;
-        win.appendChild(div);
-        win.scrollTop = win.scrollHeight;
+        
+        chatWindow.appendChild(div);
+        chatWindow.scrollTo(0, chatWindow.scrollHeight);
+    }
+
+    function showTyping() {
+        const id = 'typing-' + Date.now();
+        const div = document.createElement('div');
+        div.id = id;
+        div.className = 'ai-bubble typing chat-bubble';
+        div.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+        chatWindow.appendChild(div);
+        chatWindow.scrollTo(0, chatWindow.scrollHeight);
+        return id;
+    }
+
+    function clearChat() {
+        if(confirm("Hapus semua obrolan, Sob?")) {
+            chatWindow.innerHTML = `
+                <div class="p-4 chat-bubble ai-bubble text-gray-100">
+                    Sip, chat dibersihin. Mulai dari nol lagi Guys!
+                </div>`;
+        }
     }
 </script>
 </body>
