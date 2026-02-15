@@ -84,8 +84,29 @@
         // Recognition Setup
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         recognition.lang = 'id-ID';
-        recognition.onresult = (e) => { if(isCalling) execute(e.results[0][0].transcript, 'call'); };
-        recognition.onend = () => { if(isCalling) recognition.start(); };
+        recognition.continuous = true; // Biar dia dengerin terus
+        recognition.interimResults = false;
+
+    recognition.onstart = () => {
+        console.log("Mic is ON - BGENG is listening...");
+    };
+
+    recognition.onresult = (e) => {
+        const last = e.results.length - 1;
+        const txt = e.results[last][0].transcript;
+    
+    if(isCalling && txt.trim() !== "") {
+        console.log("Input suara:", txt);
+        execute(txt, 'call');
+        }
+    };
+
+recognition.onerror = (event) => {
+    console.error("Mic Error:", event.error);
+    if(event.error === 'not-allowed') {
+        alert("Akses mic ditolak! Cek settingan browser lu, Bro.");
+        }
+    };
 
         function toggleCall() {
             if(!isCalling) {
@@ -149,4 +170,5 @@
         }
     </script>
 </body>
+
 </html>
