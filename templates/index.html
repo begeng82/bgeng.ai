@@ -11,18 +11,17 @@
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        /* Fix Layout buat Mobile: Pake display flex di body */
         html, body { 
             background-color: #05070a; 
             margin: 0; padding: 0;
-            height: 100%; /* Penting: jangan pake 100vh */
-            width: 100%;
+            height: 100%; width: 100%;
             overflow: hidden;
-            position: fixed; /* Mencegah body ke-scroll saat keyboard muncul */
+            position: fixed; 
+            font-family: 'Inter', sans-serif;
         }
         
         .app-wrapper {
-            max-width: 800px;
+            max-width: 800px; /* Lebar kotak dipatenkan biar ga kegedean */
             margin: 0 auto;
             height: 100%;
             display: flex;
@@ -30,7 +29,15 @@
             background: #0a0c10;
         }
 
-        /* Container Chat: Mengambil sisa ruang yang ada */
+        /* FONT BGENG AI: Dibuat super kontras & glow */
+        .brand-text {
+            font-weight: 800;
+            color: #ffffff !important;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
         .chat-container { 
             flex: 1;
             overflow-y: auto; 
@@ -58,12 +65,10 @@
         .ai-bubble { background: #161b22; border-left: 3px solid #3b82f6; border-radius: 4px 18px 18px 18px; align-self: flex-start; color: #d1d5db; }
         .user-bubble { background: #2563eb; border-radius: 18px 18px 4px 18px; align-self: flex-end; color: white; }
 
-        /* Footer: Selalu di posisi paling bawah wrapper */
         footer {
             padding: 0.75rem 1rem;
             background: #0d1117;
             border-top: 1px solid rgba(255,255,255,0.05);
-            /* Handle notch iPhone */
             padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
         }
 
@@ -83,35 +88,53 @@
             color: white;
             padding: 0.6rem 0;
             outline: none;
-            font-size: 16px; /* 16px mencegah auto-zoom di iPhone */
+            font-size: 16px; /* Mencegah auto-zoom iPhone */
         }
 
-        .img-btn { color: #9ca3af; font-size: 1.2rem; display: flex; align-items: center; cursor: pointer; }
-        .send-btn { background: #2563eb; width: 2.4rem; height: 2.4rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
+        /* Tombol Gambar: Dipastikan kelihatan di mobile */
+        .img-btn { 
+            color: #ffffff !important; 
+            font-size: 1.2rem; 
+            display: flex; 
+            align-items: center; 
+            cursor: pointer;
+            opacity: 0.8;
+        }
+        
+        .send-btn { 
+            background: #2563eb; 
+            width: 2.4rem; 
+            height: 2.4rem; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+        }
 
-        /* Typing Anim */
         .typing { display: flex; gap: 4px; padding: 10px 15px; }
         .dot { width: 5px; height: 5px; background: #3b82f6; border-radius: 50%; animation: bounce 1.4s infinite; }
-        .dot:nth-child(2) { animation-delay: 0.2s; }
-        .dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
 <div class="app-wrapper">
-    <header class="p-4 flex justify-between items-center border-b border-white/5 bg-black/40 backdrop-blur-xl">
+    <header class="p-4 flex justify-between items-center border-b border-white/10 bg-black/60 backdrop-blur-xl">
         <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg overflow-hidden border border-blue-500/20">
+            <div class="w-10 h-10 rounded-lg overflow-hidden border border-blue-500/40 shadow-lg">
                 <img src="{{ url_for('static', filename='logo.jpg') }}" class="w-full h-full object-cover">
             </div>
-            <h1 class="font-bold uppercase text-sm">BGENG <span class="text-blue-500">AI</span></h1>
+            <div>
+                <h1 class="brand-text text-base">BGENG <span class="text-blue-500">AI</span></h1>
+                <p class="text-[8px] text-green-500 font-bold uppercase tracking-widest leading-none mt-1">Singularity Active</p>
+            </div>
         </div>
-        <button onclick="clearChat()" class="text-gray-500"><i class="fas fa-trash-alt text-xs"></i></button>
+        <button onclick="clearChat()" class="text-gray-400 p-2"><i class="fas fa-trash-alt text-xs"></i></button>
     </header>
 
     <main id="chat-window" class="chat-container">
-        <div class="chat-bubble ai-bubble">Hi Guys! Ini BGENG AI. Aman buat diketik sekarang?</div>
+        <div class="chat-bubble ai-bubble">Hi Guys! Font udah nyala, tombol aman. Ayo bedah tugas susah lu!</div>
     </main>
 
     <footer>
@@ -121,7 +144,9 @@
                 <input type="file" id="file-input" hidden accept="image/*">
             </label>
             <input id="user-input" type="text" autocomplete="off" placeholder="Ask me anything...">
-            <button onclick="sendMsg()" class="send-btn"><i class="fas fa-paper-plane text-xs"></i></button>
+            <button onclick="sendMsg()" class="send-btn">
+                <i class="fas fa-paper-plane text-xs"></i>
+            </button>
         </div>
     </footer>
 </div>
@@ -130,7 +155,6 @@
     const chatWindow = document.getElementById('chat-window');
     const inputField = document.getElementById('user-input');
 
-    // Fix scroll saat input difokuskan (buat mobile)
     inputField.addEventListener('focus', () => {
         setTimeout(() => { chatWindow.scrollTo(0, chatWindow.scrollHeight); }, 300);
     });
@@ -174,7 +198,7 @@
         return id;
     }
 
-    function clearChat() { chatWindow.innerHTML = ''; }
+    function clearChat() { if(confirm("Hapus chat?")) chatWindow.innerHTML = ''; }
 </script>
 </body>
 </html>
