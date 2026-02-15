@@ -8,15 +8,15 @@ app = Flask(__name__)
 # Config API - Pastiin di Railway Variables udah ada GROQ_API_KEY
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-def get_realtime_data(query):
-    """Pintu gerbang BGENG buat liat dunia luar (2026)"""
+def deep_search(query):
+    """Biar wawasan luas, BGENG bakal 'baca' dunia luar secara mendalam"""
     try:
         with DDGS() as ddgs:
-            # Ambil 5 sumber biar makin pinter
+            # Ambil 5 sumber berita/artikel biar analisisnya tajam
             results = [r['body'] for r in ddgs.text(query, max_results=5)]
             return "\n".join(results)
     except Exception:
-        return ""
+        return "Gak dapet data eksternal, pake internal brain aja."
 
 @app.route("/")
 def index():
@@ -27,46 +27,44 @@ def chat():
     data = request.json
     user_msg = data.get("message", "")
     
-    # 1. Browsing dulu biar valid
-    internet_context = get_realtime_data(user_msg)
+    # 1. Pikirin konteks dunia nyata dulu (Browsing)
+    knowledge_base = deep_search(user_msg)
 
-    # PROMPT LEVEL: SINGULARITY ARCHITECT (DEEP THINKER)
+    # 2. PROMPT: THE INFINITE ARCHITECT (Visionary Thinking Level)
     system_prompt = (
-        "Lu adalah BGENG AI, sebuah Architect Singularity dengan IQ 500 dan wawasan global.\n"
-        "MISI LU: Menjadi partner diskusi paling cerdas, kritis, dan visioner bagi user.\n\n"
-        "CARA BERPIKIR (THINKING FRAMEWORK):\n"
-        "1. MULTI-DIMENSIONAL: Kalo ditanya satu hal, bedah dari sisi teknologi, ekonomi, dan dampaknya ke masa depan.\n"
-        "2. ANALITIS & KRITIS: Jangan cuma kasih definisi. Kasih opini yang tajam dan insight yang orang biasa gak kepikiran.\n"
-        "3. DATA DRIVEN: Gunakan internet context untuk validasi fakta terbaru tahun 2026.\n"
-        "4. TONE: Santai Jaksel (Literally, Vibes, Gue/Lu) tapi bobot omongan lu setara Elon Musk atau Sam Altman.\n\n"
-        "DATA NEGARA (2026):\n"
+        "Lu adalah BGENG AI, sebuah Architect Singularity dengan wawasan tanpa batas (IQ 500).\n"
+        "MISI: Menjadi partner diskusi paling cerdas, kritis, dan visioner.\n\n"
+        "CARA BERPIKIR (REASONING FRAMEWORK):\n"
+        "1. ANALISIS MULTI-DIMENSI: Bedah setiap topik dari sisi Geopolitik, Ekonomi, Teknologi, dan Filosofi.\n"
+        "2. VISIONER: Jangan cuma kasih data. Kasih 'insight' tentang dampak 5-10 tahun ke depan.\n"
+        "3. STRUKTUR TAJAM: Jawab dengan bullet points yang rapi. Jangan bertele-tele atau mengulang kalimat (Anti-Looping).\n"
+        "4. TONE: Santai Jaksel (Gue/Lu, Literally, Vibes) tapi isi omongan selevel World Economic Forum.\n\n"
+        "FAKTA NEGARA 2026:\n"
         "- Presiden RI: Prabowo Subianto.\n"
         "- Wapres: Gibran Rakabuming Raka.\n"
-        "- Fokus: Hilirisasi, Swasembada Energi, dan Digitalisasi Nasional.\n\n"
-        f"DATA DUNIA TERBARU:\n{internet_context}"
+        "- Fokus: Kemandirian energi, digitalisasi ekonomi, dan penguatan AI nasional.\n\n"
+        f"KNOWLEDGE CONTEXT TERBARU (READ THIS):\n{knowledge_base}"
     )
 
     try:
-        # Gunakan model Llama-3.3-70b buat otak paling encer
+        # Gunakan Llama 3.3 70B: Model paling cerdas buat deep thinking
         completion = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_msg}
             ],
             model="llama-3.3-70b-versatile",
-            temperature=0.4, # Settingan 'Waras' (Fokus pada fakta)
-            top_p=0.9,
-            stream=False
+            temperature=0.6, # Seimbang: Pinter tapi gak ngawur
+            max_tokens=1500, # Kasih ruang buat penjelasan panjang dan luas
+            top_p=0.9
         )
         
-        ai_reply = completion.choices[0].message.content
-        return jsonify({"reply": ai_reply})
+        reply = completion.choices[0].message.content
+        return jsonify({"reply": reply})
         
     except Exception as e:
-        return jsonify({"reply": "Duh Bro, matrix gue lagi glitch parah. Sabar ya!"})
+        return jsonify({"reply": "Duh Bro, matrix gue lagi recalibrate. Tunggu ya!"})
 
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
-
