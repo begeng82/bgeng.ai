@@ -11,34 +11,34 @@
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
+        /* Fix Layout buat Mobile: Pake display flex di body */
         html, body { 
             background-color: #05070a; 
-            color: white; 
-            font-family: 'Inter', sans-serif; 
             margin: 0; padding: 0;
-            height: 100vh;
-            height: -webkit-fill-available;
+            height: 100%; /* Penting: jangan pake 100vh */
+            width: 100%;
             overflow: hidden;
+            position: fixed; /* Mencegah body ke-scroll saat keyboard muncul */
         }
         
         .app-wrapper {
-            max-width: 800px; /* Dipersempit biar kotak gak kegedean */
+            max-width: 800px;
             margin: 0 auto;
             height: 100%;
             display: flex;
             flex-direction: column;
             background: #0a0c10;
-            position: relative;
         }
 
+        /* Container Chat: Mengambil sisa ruang yang ada */
         .chat-container { 
             flex: 1;
             overflow-y: auto; 
+            -webkit-overflow-scrolling: touch;
             padding: 1rem;
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.03), transparent);
         }
 
         .chat-bubble {
@@ -55,27 +55,16 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .ai-bubble { 
-            background: #161b22; 
-            border-left: 3px solid #3b82f6;
-            border-radius: 4px 18px 18px 18px;
-            align-self: flex-start;
-            color: #d1d5db;
-        }
+        .ai-bubble { background: #161b22; border-left: 3px solid #3b82f6; border-radius: 4px 18px 18px 18px; align-self: flex-start; color: #d1d5db; }
+        .user-bubble { background: #2563eb; border-radius: 18px 18px 4px 18px; align-self: flex-end; color: white; }
 
-        .user-bubble { 
-            background: #2563eb;
-            border-radius: 18px 18px 4px 18px; 
-            align-self: flex-end;
-            color: white;
-        }
-
-        /* Footer & Input Bar Fix */
+        /* Footer: Selalu di posisi paling bawah wrapper */
         footer {
-            padding: 1rem;
+            padding: 0.75rem 1rem;
             background: #0d1117;
             border-top: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+            /* Handle notch iPhone */
+            padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
         }
 
         .input-group {
@@ -94,42 +83,18 @@
             color: white;
             padding: 0.6rem 0;
             outline: none;
-            font-size: 0.95rem;
+            font-size: 16px; /* 16px mencegah auto-zoom di iPhone */
         }
 
-        .img-btn {
-            color: #9ca3af;
-            font-size: 1.2rem;
-            padding: 0.5rem;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
+        .img-btn { color: #9ca3af; font-size: 1.2rem; display: flex; align-items: center; cursor: pointer; }
+        .send-btn { background: #2563eb; width: 2.4rem; height: 2.4rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
 
-        .send-btn {
-            background: #2563eb;
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            transition: transform 0.1s;
-        }
-
-        .send-btn:active { transform: scale(0.9); }
-
-        /* Typing Dots */
+        /* Typing Anim */
         .typing { display: flex; gap: 4px; padding: 10px 15px; }
         .dot { width: 5px; height: 5px; background: #3b82f6; border-radius: 50%; animation: bounce 1.4s infinite; }
         .dot:nth-child(2) { animation-delay: 0.2s; }
         .dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-
-        @media (max-width: 640px) {
-            .chat-bubble { max-width: 90%; }
-        }
     </style>
 </head>
 <body>
@@ -137,22 +102,16 @@
 <div class="app-wrapper">
     <header class="p-4 flex justify-between items-center border-b border-white/5 bg-black/40 backdrop-blur-xl">
         <div class="flex items-center gap-3">
-            <div class="logo-box w-10 h-10 rounded-lg overflow-hidden border border-blue-500/20">
+            <div class="w-9 h-9 rounded-lg overflow-hidden border border-blue-500/20">
                 <img src="{{ url_for('static', filename='logo.jpg') }}" class="w-full h-full object-cover">
             </div>
-            <div>
-                <h1 class="font-bold uppercase tracking-tighter text-sm leading-none">BGENG <span class="text-blue-500">AI</span></h1>
-                <p class="text-[7px] text-green-500 font-bold mt-1">SINGULARITY ACTIVE</p>
-            </div>
+            <h1 class="font-bold uppercase text-sm">BGENG <span class="text-blue-500">AI</span></h1>
         </div>
-        <div class="flex gap-2">
-            <button onclick="clearChat()" class="text-gray-500 p-2"><i class="fas fa-trash-alt text-xs"></i></button>
-            <button class="text-gray-500 p-2"><i class="fas fa-phone text-xs"></i></button>
-        </div>
+        <button onclick="clearChat()" class="text-gray-500"><i class="fas fa-trash-alt text-xs"></i></button>
     </header>
 
     <main id="chat-window" class="chat-container">
-        <div class="chat-bubble ai-bubble">Hi Guys! Ini BGENG AI. Ada yang mau kita bedah bareng?</div>
+        <div class="chat-bubble ai-bubble">Hi Guys! Ini BGENG AI. Aman buat diketik sekarang?</div>
     </main>
 
     <footer>
@@ -161,12 +120,8 @@
                 <i class="far fa-image"></i>
                 <input type="file" id="file-input" hidden accept="image/*">
             </label>
-            
             <input id="user-input" type="text" autocomplete="off" placeholder="Ask me anything...">
-            
-            <button onclick="sendMsg()" class="send-btn">
-                <i class="fas fa-paper-plane text-sm"></i>
-            </button>
+            <button onclick="sendMsg()" class="send-btn"><i class="fas fa-paper-plane text-xs"></i></button>
         </div>
     </footer>
 </div>
@@ -175,60 +130,51 @@
     const chatWindow = document.getElementById('chat-window');
     const inputField = document.getElementById('user-input');
 
-    inputField.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMsg(); });
+    // Fix scroll saat input difokuskan (buat mobile)
+    inputField.addEventListener('focus', () => {
+        setTimeout(() => { chatWindow.scrollTo(0, chatWindow.scrollHeight); }, 300);
+    });
 
     async function sendMsg() {
         const msg = inputField.value.trim();
         if(!msg) return;
-
         appendBubble(msg, 'user');
         inputField.value = '';
-
-        const typingId = showTyping();
-
+        const tid = showTyping();
         try {
-            // Pastikan pengiriman data menggunakan JSON yang benar
             const res = await fetch('/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: msg })
             });
-            
-            if (!res.ok) throw new Error();
-            
             const data = await res.json();
-            document.getElementById(typingId).remove();
+            document.getElementById(tid).remove();
             appendBubble(data.reply, 'ai');
-        } catch (error) {
-            if(document.getElementById(typingId)) document.getElementById(typingId).remove();
-            appendBubble("Glitch, Guys. Coba lagi!", 'ai');
+        } catch {
+            if(document.getElementById(tid)) document.getElementById(tid).remove();
+            appendBubble("Glitch, Guys!", 'ai');
         }
     }
 
-    function appendBubble(text, role) {
-        const div = document.createElement('div');
-        div.className = `chat-bubble ${role === 'ai' ? 'ai-bubble' : 'user-bubble'}`;
-        div.innerText = text;
-        chatWindow.appendChild(div);
+    function appendBubble(t, r) {
+        const d = document.createElement('div');
+        d.className = `chat-bubble ${r === 'ai' ? 'ai-bubble' : 'user-bubble'}`;
+        d.innerText = t;
+        chatWindow.appendChild(d);
         chatWindow.scrollTo(0, chatWindow.scrollHeight);
     }
 
     function showTyping() {
-        const id = 'typing-' + Date.now();
-        const div = document.createElement('div');
-        div.id = id;
-        div.className = 'ai-bubble typing chat-bubble';
-        div.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-        chatWindow.appendChild(div);
+        const id = 't-' + Date.now();
+        const d = document.createElement('div');
+        d.id = id; d.className = 'ai-bubble typing chat-bubble';
+        d.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+        chatWindow.appendChild(d);
         chatWindow.scrollTo(0, chatWindow.scrollHeight);
         return id;
     }
 
-    function clearChat() {
-        if(confirm("Hapus obrolan?")) {
-            chatWindow.innerHTML = '<div class="chat-bubble ai-bubble">Memori dibersihkan.</div>';
-        }
-    }
+    function clearChat() { chatWindow.innerHTML = ''; }
 </script>
 </body>
 </html>
