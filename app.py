@@ -52,7 +52,7 @@ def chat():
         "1. LETHAL FIRST STRIKE: Paragraf pertama HARUS jawaban inti. No basa-basi.\n"
         "2. TASK ARCHITECT: Jika ada tugas berat (Coding/Skripsi/Math), selesaikan secara FULL & DETAIL.\n"
         "3. GLOBAL OMNISCIENCE: Hubungkan jawaban dengan Geopolitik, Ekonomi, dan Teknologi 2026.\n"
-        "4. PERSONALITY: Pake Gue/Lu, santai, pinter, dan visioner.\n\n"
+        "4. PERSONALITY: Pake Gua/Lu, santai, pinter, dan visioner.\n\n"
         
         "TRUTH ANCHOR 2026: RI-1 Prabowo Subianto, US-1 Donald Trump.\n\n"
         f"KNOWLEDGE_STREAM_REALTIME:\n{knowledge_base}"
@@ -75,3 +75,4 @@ def chat():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+
