@@ -32,12 +32,6 @@ def chat():
     user_msg = data.get("message", "")
     user_name = data.get("user_name", "Guys")
     history = data.get("history", "")
-    
-@app.route('/chat', methods=['POST'])
-def chat():
-    data = request.json
-    user_message = data.get('message')
-    # ... proses AI lu di sini ...
     return jsonify({"reply": "Ini jawaban dari BGENG AI buat pesan: " + user_message})
 
     # DYNAMIC TIME SYSTEM
@@ -82,5 +76,6 @@ def chat():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+
 
 
