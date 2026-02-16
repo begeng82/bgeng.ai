@@ -52,7 +52,6 @@
             scroll-behavior: smooth;
         }
 
-        /* Bubble Styling */
         .chat-bubble {
             animation: fadeIn 0.3s ease-out;
             word-wrap: break-word;
@@ -70,7 +69,7 @@
 
         .ai-bubble { 
             background: #161b22; 
-            border: 1px solid rgba(59, 130, 246, 0.2); 
+            border: 1px solid rgba(236, 72, 153, 0.2); 
             align-self: flex-start; 
             color: #e6edf3;
             width: 100%;
@@ -83,15 +82,12 @@
             box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
         }
 
-        /* MARKDOWN STYLING (The OpenAI Look) */
+        /* Markdown Styling */
         .ai-bubble h1, .ai-bubble h2 { font-weight: 800; color: white; margin: 1rem 0 0.5rem 0; }
-        .ai-bubble p { margin-bottom: 0.75rem; }
-        .ai-bubble code { background: #2d333b; padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; font-size: 0.85rem; }
         .ai-bubble pre { background: #0d1117; padding: 1rem; border-radius: 8px; overflow-x: auto; border: 1px solid #30363d; margin: 1rem 0; }
-        .ai-bubble ul, .ai-bubble ol { margin-left: 1.5rem; margin-bottom: 1rem; list-style-type: disc; }
+        .ai-bubble code { font-family: monospace; font-size: 0.85rem; color: #ff79c6; }
         .ai-bubble table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
-        .ai-bubble th, .ai-bubble td { border: 1px solid #30363d; padding: 8px 12px; text-align: left; }
-        .ai-bubble th { background: #1f242c; color: white; }
+        .ai-bubble th, .ai-bubble td { border: 1px solid #30363d; padding: 8px 12px; }
 
         footer {
             padding: 1rem;
@@ -107,7 +103,7 @@
             border-radius: 1.5rem;
             padding: 0.4rem 0.6rem 0.4rem 1.2rem;
             gap: 0.75rem;
-            border: 1px solid rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(236, 72, 153, 0.1);
         }
 
         #user-input {
@@ -124,14 +120,25 @@
             width: 2.5rem; height: 2.5rem; 
             border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
-            transition: all 0.2s;
         }
 
-        .send-btn:hover { transform: scale(1.05); background: #3b82f6; }
-
-        .typing { display: flex; gap: 5px; padding: 15px; }
-        .dot { width: 6px; height: 6px; background: #3b82f6; border-radius: 50%; animation: bounce 1.4s infinite; }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+        /* BGENG THINKING ANIMATION */
+        .thinking-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #ec4899;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+        .thinking-dot {
+            width: 4px; height: 4px;
+            background: #ec4899;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -139,19 +146,19 @@
 <div class="app-wrapper">
     <header class="p-4 flex justify-between items-center border-b border-white/10 bg-black/60 backdrop-blur-xl">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg overflow-hidden border border-blue-500/40 shadow-lg">
-                <img src="{{ url_for('static', filename='logo.jpg') }}" class="w-full h-full object-cover">
+            <div class="w-10 h-10 rounded-lg overflow-hidden border border-pink-500/40 shadow-lg">
+                <img src="{{ url_for('static', filename='logo.jpg') }}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/40'">
             </div>
             <div>
                 <h1 class="brand-text text-base">BGENG <span class="text-pink-500">AI</span></h1>
-                <p class="text-[8px] text-green-500 font-bold uppercase tracking-widest mt-1">Quantum Active</p>
+                <p id="status-text" class="text-[8px] text-green-500 font-bold uppercase tracking-widest mt-1">Quantum Active</p>
             </div>
         </div>
         <button onclick="clearChat()" class="text-gray-500 hover:text-red-500 transition-colors"><i class="fas fa-trash-alt"></i></button>
     </header>
 
     <main id="chat-window" class="chat-container">
-        <div class="chat-bubble ai-bubble">🔥 <b>BGENG AI V.1 Ready.</b><br>Kasih gua pertanyaan cetek lu, Gue siap bedah!.</div>
+        <div class="chat-bubble ai-bubble">🔥 <b>BGENG AI Singularity Ready.</b><br><span id="welcome-msg">Kasih gua pertanyaan cetek lu, Gue siap bedah!</span></div>
     </main>
 
     <footer>
@@ -172,7 +179,20 @@
     const chatWindow = document.getElementById('chat-window');
     const inputField = document.getElementById('user-input');
 
-    // Handle Enter Key
+    // 1. MEMORY SYSTEM (LocalStorage)
+    let userName = localStorage.getItem('bgeng_user') || "";
+    if (!userName) {
+        setTimeout(() => {
+            userName = prompt("Yo, siapa nama lu?", "Guys");
+            if(userName) {
+                localStorage.setItem('bgeng_user', userName);
+                document.getElementById('welcome-msg').innerText = `Yo ${userName}, mau bedah apa kita hari ini?`;
+            }
+        }, 1000);
+    } else {
+        document.getElementById('welcome-msg').innerText = `Yo ${userName}, mau bedah apa kita hari ini?`;
+    }
+
     inputField.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
 
     async function sendMsg() {
@@ -182,24 +202,30 @@
         appendBubble(msg, 'user');
         inputField.value = '';
         
-        const tid = showTyping();
+        const tid = showThinking();
+
+        // Ambil histori singkat dari bubble chat sebelumnya
+        const history = Array.from(document.querySelectorAll('.chat-bubble'))
+                        .slice(-4)
+                        .map(b => b.innerText)
+                        .join(" | ");
 
         try {
             const res = await fetch('/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: msg })
+                body: JSON.stringify({ 
+                    message: msg,
+                    user_name: userName || "Guys",
+                    history: history
+                })
             });
             const data = await res.json();
-            
             document.getElementById(tid).remove();
-            
-            // Typewriter + Markdown Effect
             typeWriter(data.reply);
-            
         } catch (e) {
             if(document.getElementById(tid)) document.getElementById(tid).remove();
-            appendBubble("Matrix Glitch, Guys! Coba lagi.", 'ai');
+            appendBubble("Matrix Glitch, Guys! Koneksi lu amsyong.", 'ai');
         }
     }
 
@@ -211,26 +237,37 @@
         chatWindow.scrollTo(0, chatWindow.scrollHeight);
     }
 
+    // 2. BGENG THINKING REPLACEMENT
+    function showThinking() {
+        const id = 't-' + Date.now();
+        const d = document.createElement('div');
+        d.id = id; 
+        d.className = 'ai-bubble chat-bubble';
+        d.innerHTML = `
+            <div class="thinking-wrapper">
+                <div class="thinking-dot"></div>
+                <span>BGENG THINKING</span>
+                <div class="thinking-dot"></div>
+            </div>`;
+        chatWindow.appendChild(d);
+        chatWindow.scrollTo(0, chatWindow.scrollHeight);
+        return id;
+    }
+
     function typeWriter(text) {
         const bubble = document.createElement('div');
-        bubble.className = 'chat-bubble ai-bubble markdown-content';
+        bubble.className = 'chat-bubble ai-bubble';
         chatWindow.appendChild(bubble);
         
         let i = 0;
         let currentContent = "";
-        const speed = 10; // Milidetik per karakter
+        const speed = 8; 
 
         function type() {
             if (i < text.length) {
                 currentContent += text.charAt(i);
-                // Render Markdown secara progresif
                 bubble.innerHTML = marked.parse(currentContent);
-                
-                // Highlight code blocks
-                bubble.querySelectorAll('pre code').forEach((block) => {
-                    hljs.highlightElement(block);
-                });
-
+                bubble.querySelectorAll('pre code').forEach((b) => hljs.highlightElement(b));
                 i++;
                 chatWindow.scrollTo(0, chatWindow.scrollHeight);
                 setTimeout(type, speed);
@@ -239,23 +276,11 @@
         type();
     }
 
-    function showTyping() {
-        const id = 't-' + Date.now();
-        const d = document.createElement('div');
-        d.id = id; 
-        d.className = 'ai-bubble typing chat-bubble';
-        d.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-        chatWindow.appendChild(d);
-        chatWindow.scrollTo(0, chatWindow.scrollHeight);
-        return id;
-    }
-
     function clearChat() { 
-        if(confirm("Hapus semua chat ini Der?")) {
-            chatWindow.innerHTML = '<div class="chat-bubble ai-bubble">Memory cleared. Ready for new intel.</div>';
+        if(confirm("Hapus memori chat ini Der?")) {
+            chatWindow.innerHTML = '<div class="chat-bubble ai-bubble">Memory wiped. Ready for new intel.</div>';
         }
     }
 </script>
 </body>
 </html>
-
