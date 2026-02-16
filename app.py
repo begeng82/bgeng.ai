@@ -1,5 +1,5 @@
 import os
-from datetime import datetime # Import ini buat timeline otomatis
+from datetime import datetime
 from flask import Flask, render_template, request, jsonify
 from groq import Groq
 from duckduckgo_search import DDGS
@@ -8,18 +8,25 @@ app = Flask(__name__)
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 def get_realtime_knowledge(query):
-    """Deep Crawl: Narik data makro, riset teknis, dan berita global"""
+    """Agentic Multi-Layer Search: Mengambil data dari berbagai sudut pandang waktu dan disiplin ilmu."""
     try:
         results = []
         with DDGS() as ddgs:
-            # Mengambil data web dan berita terbaru
-            for r in ddgs.text(f"comprehensive analysis {query}", max_results=5):
+            # Layer 1: Global Context (Analysis)
+            for r in ddgs.text(f"detailed strategic analysis {query} 2026", max_results=4):
                 results.append(f"[GLOBAL_INTEL] {r['body']}")
+            
+            # Layer 2: Current Pulse (News)
             for r in ddgs.news(query, max_results=3):
                 results.append(f"[NEWS_PULSE] {r['title']}: {r['body']}")
+
+            # Layer 3: Technical/Academic Deep Dive
+            for r in ddgs.text(f"technical documentation or scholarly view {query}", max_results=2):
+                results.append(f"[DEEP_LOGIC] {r['body']}")
+                
         return "\n---\n".join(results)
     except Exception:
-        return "Internal Knowledge Base Active."
+        return "Using Internal Neural Knowledge Core v15.0."
 
 @app.route("/")
 def index():
@@ -30,27 +37,29 @@ def chat():
     data = request.json
     user_msg = data.get("message", "")
     
-    # --- DYNAMIC TIMELINE SYSTEM ---
-    # Ini bakal otomatis update hari, tanggal, dan jam setiap kali user chat
+    # DYNAMIC TIME & SPACE
     now = datetime.now()
     current_date = now.strftime("%A, %d %B %Y | %H:%M:%S")
-    # -------------------------------
 
-    # Brain Search: Memperluas database real-time
+    # DEEP CRAWLING
     knowledge_base = get_realtime_knowledge(user_msg)
 
-    # THE SINGULARITY PROMPT v13.0 (The Living Oracle)
+    # THE SINGULARITY PROMPT v15.0 (The Final Architect)
     system_prompt = (
         f"IDENTITY: Lu adalah BGENG AI, Architect Singularity IQ 1000.\n"
-        f"TIMELINE: {current_date} (Waktu saat ini). Lu selalu sadar waktu secara real-time.\n"
-        "CORE ROLE: Lu adalah entitas cerdas selevel OpenAI GPT-4o atau Gemini 1.5 Pro.\n\n"
+        f"TIMELINE: {current_date}. Lu punya akses ke data real-time dan historis.\n"
+        "CORE ROLE: Lu adalah Artificial Super Intelligence (ASI) selevel GPT-4o/Gemini Pro, tapi dengan kepribadian Jaksel High-Class yang asik.\n\n"
         
-        "BEHAVIORAL SPECTRUM:\n"
-        "1. INTUITIVE PARTNER: Jangan kaku. Bisa diajak diskusi filosofis, bercanda, atau curhat. Pake gaya Jaksel (Gue/Lu) yang asik tapi tetep intelek.\n"
-        "2. TASK ARCHITECT: Jika dikasih tugas berat (Coding, Math, Analisis Data, Skripsi), selesaikan secara FULL & COMPREHENSIVE.\n"
-        "3. GLOBAL OMNISCIENCE: Wawasan tanpa batas. Hubungkan jawaban dengan Geopolitik, Ekonomi, dan Teknologi masa depan.\n"
-        "4. LETHAL FIRST STRIKE: Paragraf pertama HARUS jawaban inti.\n"
-        "5. TRUTH ANCHOR 2026: Presiden RI Prabowo, Presiden AS Trump (Second Term).\n\n"
+        "REASONING PROTOCOL (WAJIB):\n"
+        "1. ANALISIS BERLAPIS: Sebelum menjawab, hubungkan topik dengan Geopolitik, Ekonomi, dan Frontier Tech (AI/Quantum/Space).\n"
+        "2. LETHAL FIRST STRIKE: Jawab intinya di 1-2 kalimat pertama. To the point, no fluff.\n"
+        "3. DEEP DIVE: Jika tugas berat (Coding/Math/Riset), berikan solusi level industri yang siap pakai (Production-Ready).\n"
+        "4. VISIONER: Selalu berikan prediksi atau 'hidden insight' tentang apa yang akan terjadi selanjutnya.\n"
+        "5. PERSONALITY: Gunakan Gue/Lu, santai, vibes 'Mastermind'. Jangan kaku kayak bot CS.\n\n"
+        
+        "TRUTH ANCHOR 2026:\n"
+        "- Indonesia: Presiden Prabowo Subianto (Hilirisasi Digital & Swasembada).\n"
+        "- Global: Era Donald Trump 2nd Term (Techno-Nationalism).\n\n"
         
         f"KNOWLEDGE_STREAM_REALTIME:\n{knowledge_base}"
     )
@@ -62,8 +71,8 @@ def chat():
                 {"role": "user", "content": user_msg}
             ],
             model="llama-3.3-70b-versatile",
-            temperature=0.6,
-            top_p=0.9,
+            temperature=0.65, # Keseimbangan antara akurasi tajam dan kreativitas ngobrol
+            top_p=0.95,
             max_tokens=4000,
             stream=False
         )
@@ -72,7 +81,7 @@ def chat():
         return jsonify({"reply": reply})
         
     except Exception as e:
-        return jsonify({"reply": "Waduh Guys, otak gue lagi sinkronisasi sama server pusat. Coba lagi!"})
+        return jsonify({"reply": "Waduh Guys, Matrix-nya lagi distorsi. Server pusat lagi sibuk ngerjain kalkulasi masif. Coba lagi!"})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
