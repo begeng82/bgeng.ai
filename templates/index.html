@@ -143,15 +143,15 @@
                 <img src="{{ url_for('static', filename='logo.jpg') }}" class="w-full h-full object-cover">
             </div>
             <div>
-                <h1 class="brand-text text-base">BGENG <span class="text-blue-500">AI</span></h1>
-                <p class="text-[8px] text-green-500 font-bold uppercase tracking-widest mt-1">Quantum Synapse Active</p>
+                <h1 class="brand-text text-base">BGENG <span class="text-pink-500">AI</span></h1>
+                <p class="text-[8px] text-green-500 font-bold uppercase tracking-widest mt-1">Quantum Active</p>
             </div>
         </div>
         <button onclick="clearChat()" class="text-gray-500 hover:text-red-500 transition-colors"><i class="fas fa-trash-alt"></i></button>
     </header>
 
     <main id="chat-window" class="chat-container">
-        <div class="chat-bubble ai-bubble">🔥 <b>BGENG AI Singularity v13.0 Ready.</b><br>Ada tugas berat apa hari ini? Gue siap bedah dari sisi historis sampe masa depan.</div>
+        <div class="chat-bubble ai-bubble">🔥 <b>BGENG AI V.1 Ready.</b><br>Kasih gua pertanyaan cetek lu, Gue siap bedah!.</div>
     </main>
 
     <footer>
@@ -251,10 +251,11 @@
     }
 
     function clearChat() { 
-        if(confirm("Hapus semua memori chat ini?")) {
+        if(confirm("Hapus semua chat ini Der?")) {
             chatWindow.innerHTML = '<div class="chat-bubble ai-bubble">Memory cleared. Ready for new intel.</div>';
         }
     }
 </script>
 </body>
 </html>
+
