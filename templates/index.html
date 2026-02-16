@@ -44,9 +44,8 @@
         .ai-bubble { align-self: flex-start; width: 100%; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 1.2rem; }
         .ai-bubble .content { line-height: 1.7; color: #e3e3e3; font-size: 0.95rem; }
 
-        /* --- THINKING NO ROBOT --- */
         .thinking-wrapper { padding: 10px 0; }
-        .thinking-txt { font-size: 0.8rem; color: #4a90e2; font-weight: 500; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .thinking-txt { font-size: 0.8rem; color: #4a90e2; font-weight: 500; margin-bottom: 6px; }
         .typing-loader { display: flex; gap: 4px; }
         .t-dot { width: 5px; height: 5px; background: #4a90e2; border-radius: 50%; animation: pulse 1.4s infinite; }
         .t-dot:nth-child(2) { animation-delay: 0.2s; }
@@ -63,9 +62,11 @@
         .send-circle:hover { background: #4a90e2; color: #fff; }
 
         .history-list { flex: 1; overflow-y: auto; }
-        .history-item-wrapper { display: flex; align-items: center; justify-content: space-between; border-radius: 12px; margin-bottom: 0.5rem; }
+        .history-item-wrapper { display: flex; align-items: center; justify-content: space-between; border-radius: 12px; margin-bottom: 0.5rem; transition: 0.2s; }
         .history-item-wrapper:hover { background: var(--accent-color); }
         .history-item { flex: 1; padding: 0.8rem; cursor: pointer; font-size: 0.85rem; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .delete-btn { padding: 0.8rem; color: #444; cursor: pointer; transition: 0.2s; }
+        .delete-btn:hover { color: #ff4d4d; }
 
         @media (min-width: 768px) { .chat-container { padding: 2rem; } .user-bubble { max-width: 75%; } }
     </style>
@@ -79,7 +80,7 @@
         <button onclick="toggleSidebar()" class="text-gray-500"><i class="fas fa-times"></i></button>
     </div>
     <button onclick="createNewChat()" class="w-full py-3 px-4 rounded-xl border border-dashed border-gray-700 text-gray-400 text-sm mb-4 text-left hover:bg-gray-800">
-        <i class="fas fa-plus mr-2 text-xs"></i> New Session
+        <i class="fas fa-plus mr-2 text-xs"></i> Sesi Baru
     </button>
     <div id="history-container" class="history-list"></div>
 </div>
@@ -91,7 +92,9 @@
             <img src="/static/logo.jpg" class="user-logo" onerror="this.src='https://ui-avatars.com/api/?name=B&background=1e1e20&color=fff'">
             <div class="brand-logo font-bold">BGENG <span class="text-gray-400 font-medium">AI</span></div>
         </div>
-        <button onclick="clearCurrentChat()" class="text-gray-500 hover:text-red-400"><i class="far fa-trash-can"></i></button>
+        <button onclick="clearAllHistory()" class="text-gray-500 hover:text-red-400 p-2" title="Hapus Semua History">
+            <i class="far fa-trash-can text-lg"></i>
+        </button>
     </header>
 
     <main id="chat-window" class="chat-container">
@@ -117,50 +120,86 @@
     const chatWindow = document.getElementById('chat-window');
     const inputField = document.getElementById('user-input');
     const historyContainer = document.getElementById('history-container');
+    
+    // Load sessions dari storage
     let savedSessions = JSON.parse(localStorage.getItem('bgeng_sessions')) || [];
 
-    // Tanda file yang terpilih (Optional buat backend)
-    function handleFileUpload(input) {
-        if (input.files && input.files[0]) {
-            alert("File " + input.files[0].name + " terpilih! (Siap dikirim ke Python)");
-            // Lu bisa tambahin logika upload di sini kalau perlu
+    function renderHistory() {
+        historyContainer.innerHTML = '';
+        savedSessions.forEach((s, i) => {
+            const w = document.createElement('div');
+            w.className = 'history-item-wrapper';
+            w.innerHTML = `
+                <div class="history-item" onclick="loadSession(${i})">
+                    <i class="far fa-comment-dots mr-2 text-blue-500"></i>${s.title}
+                </div>
+                <div class="delete-btn" onclick="deleteSingleHistory(event, ${i})">
+                    <i class="fas fa-times"></i>
+                </div>
+            `;
+            historyContainer.appendChild(w);
+        });
+    }
+
+    // Hapus SEMUA history (Layar + Sidebar + LocalStorage)
+    function clearAllHistory() {
+        if(confirm("Hapus semua riwayat percakapan secara permanen?")) {
+            savedSessions = []; // Kosongkan array
+            localStorage.removeItem('bgeng_sessions'); // Hapus storage
+            renderHistory(); // Update sidebar
+            chatWindow.innerHTML = '<div class="chat-bubble ai-bubble"><div class="content">Semua intelijen telah dihapus. Sesi bersih dimulai.</div></div>';
         }
+    }
+
+    // Hapus satu per satu item di sidebar
+    function deleteSingleHistory(event, index) {
+        event.stopPropagation(); // Biar gak trigger loadSession
+        savedSessions.splice(index, 1);
+        localStorage.setItem('bgeng_sessions', JSON.stringify(savedSessions));
+        renderHistory();
     }
 
     async function sendMsg() {
         const msg = inputField.value.trim();
         if(!msg) return;
 
-        // Ambil riwayat singkat buat konteks
-        const context = Array.from(document.querySelectorAll('.content'))
-            .slice(-3).map(c => c.innerText).join(" | ");
-
         appendUserBubble(msg);
         inputField.value = '';
         const tid = showThinking();
 
         try {
-            // KIRIM KE PYTHON (FLASK)
             const res = await fetch('/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    message: msg, 
-                    context: context 
-                })
+                body: JSON.stringify({ message: msg })
             });
             
             const data = await res.json();
             document.getElementById(tid).remove();
             
-            // Terima reply dari Python
-            appendAiBubble(data.reply || "Gagal dapet respon Der.");
+            appendAiBubble(data.reply);
             saveSession(msg, data.reply);
             
         } catch (e) {
             if(document.getElementById(tid)) document.getElementById(tid).remove();
-            appendAiBubble("Waduh Der, timeline lagi distorsi. Coba lagi!");
+            appendAiBubble("Koneksi bapuk Der, coba lagi.");
         }
+    }
+
+    function saveSession(user, ai) {
+        const title = user.length > 25 ? user.substring(0, 25) + "..." : user;
+        savedSessions.unshift({ title, user, ai });
+        if(savedSessions.length > 20) savedSessions.pop();
+        localStorage.setItem('bgeng_sessions', JSON.stringify(savedSessions));
+        renderHistory();
+    }
+
+    function loadSession(i) {
+        const s = savedSessions[i];
+        chatWindow.innerHTML = '';
+        appendUserBubble(s.user);
+        appendAiBubble(s.ai);
+        if(window.innerWidth < 1024) toggleSidebar();
     }
 
     function showThinking() {
@@ -209,38 +248,19 @@
     }
 
     function scrollDown() { chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' }); }
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebar-overlay').style.display = document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none'; }
-    function clearCurrentChat() { if(confirm("Bersihkan layar?")) chatWindow.innerHTML = '<div class="chat-bubble ai-bubble"><div class="content">Layar bersih. Ada apa lagi Der?</div></div>'; }
-    function createNewChat() { chatWindow.innerHTML = '<div class="chat-bubble ai-bubble"><div class="content">Sesi baru dimulai.</div></div>'; toggleSidebar(); }
-    
-    // History Sync
-    function saveSession(user, ai) {
-        const title = user.substring(0, 20) + "...";
-        savedSessions.unshift({ title, user, ai });
-        if(savedSessions.length > 15) savedSessions.pop();
-        localStorage.setItem('bgeng_sessions', JSON.stringify(savedSessions));
-        renderHistory();
+    function toggleSidebar() { 
+        document.getElementById('sidebar').classList.toggle('open'); 
+        document.getElementById('sidebar-overlay').style.display = document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none'; 
     }
-
-    function renderHistory() {
-        historyContainer.innerHTML = '';
-        savedSessions.forEach((s, i) => {
-            const w = document.createElement('div');
-            w.className = 'history-item-wrapper';
-            w.innerHTML = `<div class="history-item" onclick="loadSession(${i})"><i class="far fa-comment mr-2"></i>${s.title}</div>`;
-            historyContainer.appendChild(w);
-        });
+    function createNewChat() { 
+        chatWindow.innerHTML = '<div class="chat-bubble ai-bubble"><div class="content">Sesi baru dimulai. Ada intel apa?</div></div>'; 
+        toggleSidebar(); 
     }
-
-    function loadSession(i) {
-        const s = savedSessions[i];
-        chatWindow.innerHTML = '';
-        appendUserBubble(s.user);
-        appendAiBubble(s.ai);
-        toggleSidebar();
-    }
+    function handleFileUpload(input) { if (input.files[0]) alert("File " + input.files[0].name + " siap dikirim!"); }
 
     inputField.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
+    
+    // Inisialisasi awal
     renderHistory();
 </script>
 </body>
