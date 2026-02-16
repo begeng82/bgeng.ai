@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>BGENG AI | Singularity</title>
+    <title>BGENG AS | Artificial Singularity</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -58,8 +58,8 @@
         
         .icon-btn { color: #666; cursor: pointer; padding: 0.5rem; transition: 0.2s; }
         .icon-btn:hover { color: #4a90e2; }
-        .send-circle { width: 36px; height: 36px; border-radius: 50%; background: #fff; color: #000; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
-        .send-circle:hover { background: #4a90e2; color: #fff; }
+        .send-circle { width: 36px; height: 36px; border-radius: 50%; background: #4a90e2; color: #000; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .send-circle:hover { background: #ff4d4d; color: #fff; }
 
         .history-list { flex: 1; overflow-y: auto; }
         .history-item-wrapper { display: flex; align-items: center; justify-content: space-between; border-radius: 12px; margin-bottom: 0.5rem; transition: 0.2s; }
@@ -76,11 +76,11 @@
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div id="sidebar">
     <div class="flex justify-between items-center mb-6">
-        <h2 class="font-bold text-white text-lg">Intel History</h2>
+        <h2 class="font-bold text-white text-lg">Chat History<br>Hapus kalo ga berguna</h2>
         <button onclick="toggleSidebar()" class="text-gray-500"><i class="fas fa-times"></i></button>
     </div>
     <button onclick="createNewChat()" class="w-full py-3 px-4 rounded-xl border border-dashed border-gray-700 text-gray-400 text-sm mb-4 text-left hover:bg-gray-800">
-        <i class="fas fa-plus mr-2 text-xs"></i> Sesi Baru
+        <i class="fas fa-plus mr-2 text-xs"></i> Chat Baru
     </button>
     <div id="history-container" class="history-list"></div>
 </div>
@@ -99,7 +99,7 @@
 
     <main id="chat-window" class="chat-container">
         <div class="chat-bubble ai-bubble">
-            <div class="content">Yo Der, gue BGENG AI. Ada intelijen apa hari ini?</div>
+            <div class="content">Der, gua BGENG AI. Mau bedah apa kita hari ini?</div>
         </div>
     </main>
 
@@ -109,10 +109,10 @@
                 <i class="far fa-image"></i>
                 <input type="file" id="file-input" hidden accept="image/*" onchange="handleFileUpload(this)">
             </label>
-            <input id="user-input" type="text" placeholder="Tanya BGENG AI..." autocomplete="off">
+            <input id="user-input" type="text" placeholder="Tanyain BGENG AI ..." autocomplete="off">
             <button id="send-btn" onclick="sendMsg()" class="send-circle"><i class="fas fa-arrow-up"></i></button>
         </div>
-        <p class="text-[9px] text-center text-gray-700 mt-4 tracking-widest uppercase">Architect Singularity v3.3.70b</p>
+        <p class="text-[9px] text-center text-gray-700 mt-4 tracking-widest uppercase">100% belom tentu ada yang benar</p>
     </footer>
 </div>
 
@@ -147,7 +147,7 @@
             savedSessions = []; // Kosongkan array
             localStorage.removeItem('bgeng_sessions'); // Hapus storage
             renderHistory(); // Update sidebar
-            chatWindow.innerHTML = '<div class="chat-bubble ai-bubble"><div class="content">Semua intelijen telah dihapus. Sesi bersih dimulai.</div></div>';
+            chatWindow.innerHTML = '<div class="chat-bubble ai-bubble"><div class="content">Semua chat telah dihapus. Sesi baru dimulai.</div></div>';
         }
     }
 
@@ -182,7 +182,7 @@
             
         } catch (e) {
             if(document.getElementById(tid)) document.getElementById(tid).remove();
-            appendAiBubble("Koneksi bapuk Der, coba lagi.");
+            appendAiBubble("Koneksi bapuk Der, Entar coba lagi.");
         }
     }
 
@@ -208,7 +208,7 @@
         d.id = id; d.className = 'chat-bubble ai-bubble';
         d.innerHTML = `
             <div class="thinking-wrapper">
-                <div class="thinking-txt">BGENG is thinking...</div>
+                <div class="thinking-txt">BGENG is thinking🧠</div>
                 <div class="typing-loader">
                     <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
                 </div>
@@ -253,7 +253,7 @@
         document.getElementById('sidebar-overlay').style.display = document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none'; 
     }
     function createNewChat() { 
-        chatWindow.innerHTML = '<div class="chat-bubble ai-bubble"><div class="content">Sesi baru dimulai. Ada intel apa?</div></div>'; 
+        chatWindow.innerHTML = '<div class="chat-bubble ai-bubble"><div class="content">Kirim pertanyaan cetek lu?</div></div>'; 
         toggleSidebar(); 
     }
     function handleFileUpload(input) { if (input.files[0]) alert("File " + input.files[0].name + " siap dikirim!"); }
@@ -265,3 +265,4 @@
 </script>
 </body>
 </html>
+
