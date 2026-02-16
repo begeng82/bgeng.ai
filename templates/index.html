@@ -12,174 +12,190 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         html, body { 
-            background-color: #030407; 
+            background-color: #0e0e10; 
             margin: 0; padding: 0;
             height: 100%; width: 100%;
             overflow: hidden;
-            position: fixed; 
-            font-family: 'Inter', sans-serif;
-            color: #94a3b8;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #e3e3e3;
         }
         
+        /* SIDEBAR STYLE */
+        #sidebar {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            width: 280px;
+            height: 100%;
+            background: #171719;
+            z-index: 50;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        #sidebar.open { left: 0; }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 40;
+        }
+
+        .history-item {
+            padding: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: 0.2s;
+            color: #999;
+        }
+
+        .history-item:hover { background: #2f2f2f; color: #fff; }
+
+        /* MAIN WRAPPER */
         .app-wrapper {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             height: 100%;
             display: flex;
             flex-direction: column;
-            background: #07090e; 
-            border-left: 1px solid rgba(255,255,255,0.02);
-            border-right: 1px solid rgba(255,255,255,0.02);
+            position: relative;
         }
+
+        header {
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .header-left { display: flex; align-items: center; gap: 12px; }
+
+        .user-logo { width: 32px; height: 32px; border-radius: 8px; object-fit: cover; }
+
+        .brand-logo { font-size: 1rem; font-weight: 700; color: #fff; }
 
         .chat-container { 
             flex: 1;
             overflow-y: auto; 
-            padding: 1.5rem;
+            padding: 1rem 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 1.2rem;
             scroll-behavior: smooth;
         }
 
-        /* BUBBLE PRECISION */
-        .chat-bubble {
-            animation: fadeIn 0.25s ease-out;
-            word-wrap: break-word;
-            max-width: 85%;
-            font-size: 0.92rem;
-            line-height: 1.6;
-            padding: 0.75rem 1rem;
-            border-radius: 16px;
-            width: fit-content; /* Kotak ngikutin teks */
-        }
+        .chat-bubble { margin-bottom: 2rem; width: 100%; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: center; background: #1e1e20; border: 1px solid #333; }
 
-        .ai-bubble { 
-            background: #11141b; 
-            border: 1px solid rgba(255, 255, 255, 0.05); 
-            align-self: flex-start; 
-            color: #cbd5e1;
-            border-bottom-left-radius: 2px;
-        }
+        .user-bubble { align-self: flex-end; width: auto; }
+        .user-bubble .content { background: #2f2f2f; padding: 0.7rem 1.2rem; border-radius: 1.2rem; color: #fff; }
+
+        .ai-bubble { align-self: flex-start; width: 100%; border-top: 1px solid #1e1e20; padding-top: 1.5rem; }
         
-        .user-bubble { 
-            background: #1e293b; 
-            border: 1px solid rgba(236, 72, 153, 0.1);
-            align-self: flex-end; 
-            color: #ffffff; 
-            border-bottom-right-radius: 2px;
-        }
+        .content pre { background: #000; padding: 1.2rem; border-radius: 12px; margin: 1rem 0; overflow-x: auto; border: 1px solid #333; }
+        .content code { font-family: 'Consolas', monospace; color: #64b5f6; font-size: 0.9rem; }
 
-        /* Markdown Styling Rapi */
-        .ai-bubble p { margin-bottom: 0.6rem; }
-        .ai-bubble p:last-child { margin-bottom: 0; }
-        .ai-bubble pre { background: #000; padding: 1rem; border-radius: 10px; border: 1px solid #1e293b; margin: 0.8rem 0; overflow-x: auto; width: 100%; }
-        .ai-bubble code { font-family: 'Fira Code', monospace; color: #ec4899; font-size: 0.8rem; }
-        .ai-bubble ul, .ai-bubble ol { padding-left: 1.2rem; margin-bottom: 0.5rem; }
+        footer { padding: 1rem 1.5rem 2rem; background: linear-gradient(transparent, #0e0e10 20%); }
 
-        footer {
-            padding: 1rem 1.5rem;
-            background: #07090e;
-            border-top: 1px solid rgba(255, 255, 255, 0.03);
-            padding-bottom: calc(1rem + env(safe-area-inset-bottom));
-        }
+        .input-dock { background: #1e1e20; border-radius: 28px; padding: 0.6rem 0.8rem 0.6rem 1.5rem; display: flex; align-items: center; gap: 1rem; max-width: 800px; margin: 0 auto; border: 1px solid transparent; }
+        .input-dock:focus-within { border-color: #444; }
 
-        .input-group {
-            display: flex;
-            align-items: center;
-            background: #111827;
-            border-radius: 12px;
-            padding: 0.4rem 0.5rem 0.4rem 1rem;
-            gap: 0.8rem;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-        }
+        #user-input { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: 1rem; }
 
-        #user-input {
-            flex: 1; background: transparent; border: none;
-            color: #f8fafc; outline: none; font-size: 15px;
-        }
+        .send-circle { width: 40px; height: 40px; border-radius: 50%; background: #fff; color: #000; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-        .send-btn { 
-            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
-            width: 2.2rem; height: 2.2rem; border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.2s; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2);
-        }
-        .send-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
+        .typing-loader { display: flex; gap: 5px; padding: 10px 0; }
+        .t-dot { width: 6px; height: 6px; background: #666; border-radius: 50%; animation: pulse 1.4s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-        .thinking-wrapper {
-            display: flex; align-items: center; gap: 8px;
-            font-size: 10px; color: #ec4899; font-weight: 800;
-            letter-spacing: 0.15em;
-        }
-        .thinking-dot { width: 3px; height: 3px; background: #ec4899; border-radius: 50%; animation: bounce 1.2s infinite; }
-        @keyframes bounce { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
-
-        ::-webkit-scrollbar { width: 3px; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-<div class="app-wrapper">
-    <header class="p-4 flex justify-between items-center border-b border-white/5 bg-black/20 backdrop-blur-md">
-        <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg overflow-hidden border border-white/10">
-                <img src="{{ url_for('static', filename='logo.jpg') }}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/40'">
-            </div>
-            <div>
-                <h1 class="brand-text text-sm">BGENG <span class="text-pink-500">AI</span></h1>
-                <p class="text-[7px] text-pink-500/60 font-bold uppercase tracking-widest">Neural Singularity</p>
-            </div>
+<div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+<div id="sidebar">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="font-bold text-white">Chat History</h2>
+        <button onclick="toggleSidebar()" class="text-gray-500"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="flex flex-col gap-2 overflow-y-auto">
+        <div class="history-item"><i class="far fa-message mr-2"></i> Cara bikin kopi enak</div>
+        <div class="history-item"><i class="far fa-message mr-2"></i> Belajar Python Dasar</div>
+        <div class="history-item"><i class="far fa-message mr-2"></i> Kenapa langit biru?</div>
         </div>
-        <button onclick="clearChat()" class="text-gray-600 hover:text-white transition-colors"><i class="fas fa-power-off text-xs"></i></button>
+</div>
+
+<div class="app-wrapper">
+    <header>
+        <div class="header-left">
+            <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white mr-2">
+                <i class="fas fa-ellipsis-v text-lg"></i>
+            </button>
+            <img src="{{ url_for('static', filename='logo.jpg') }}" class="user-logo" onerror="this.src='https://via.placeholder.com/32'">
+            <div class="brand-logo">BGENG <span class="text-gray-500">AI</span></div>
+        </div>
+        <button onclick="clearChat()" class="text-gray-500 hover:text-red-400 p-2">
+            <i class="far fa-trash-can text-lg"></i>
+        </button>
     </header>
 
     <main id="chat-window" class="chat-container">
         <div class="chat-bubble ai-bubble">
-            <p>🌌 <b>System Active.</b><br><span id="welcome-msg" class="text-gray-500">Ready for data extraction.</span></p>
+            <div class="avatar"><i class="fas fa-robot text-xs text-blue-400"></i></div>
+            <div class="content" id="welcome-msg">Halo, saya BGENG AI. Ada yang bisa saya bantu hari ini?</div>
         </div>
     </main>
 
     <footer>
-        <div class="input-group">
-            <label class="text-gray-500 cursor-pointer hover:text-pink-500">
-                <i class="far fa-image text-lg"></i>
-                <input type="file" hidden accept="image/*">
+        <div class="input-dock">
+            <label class="text-gray-400 cursor-pointer hover:text-white">
+                <i class="fas fa-paperclip text-lg"></i>
+                <input type="file" hidden>
             </label>
-            <input id="user-input" type="text" autocomplete="off" placeholder="Tanya apa aja ke BGENG...">
-            <button onclick="sendMsg()" class="send-btn text-white">
-                <i class="fas fa-chevron-up text-xs"></i>
+            <input id="user-input" type="text" autocomplete="off" placeholder="Tanyakan apa saja...">
+            <button id="send-btn" onclick="sendMsg()" class="send-circle">
+                <i class="fas fa-arrow-up"></i>
             </button>
         </div>
     </footer>
 </div>
 
 <script>
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
     const chatWindow = document.getElementById('chat-window');
     const inputField = document.getElementById('user-input');
+
+    // TOGGLE SIDEBAR FUNCTION
+    function toggleSidebar() {
+        sidebar.classList.toggle('open');
+        overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+    }
 
     let userName = localStorage.getItem('bgeng_user') || "";
     if (!userName) {
         setTimeout(() => {
-            userName = prompt("Identitas lu siapa, Der?", "Guest");
-            if(userName) {
-                localStorage.setItem('bgeng_user', userName);
-                document.getElementById('welcome-msg').innerText = `Yo ${userName}, mau bedah apa kita hari ini?`;
-            }
-        }, 800);
-    } else {
-        document.getElementById('welcome-msg').innerText = `Yo ${userName}, mau bedah apa kita hari ini?`;
+            userName = prompt("Siapa nama kamu?", "User");
+            if(userName) localStorage.setItem('bgeng_user', userName);
+        }, 1000);
     }
 
     inputField.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
@@ -188,89 +204,68 @@
         const msg = inputField.value.trim();
         if(!msg) return;
 
-        // Tampilkan pesan User
-        appendBubble(msg, 'user');
+        appendUserBubble(msg);
         inputField.value = '';
-
-        // Capture history (Teks saja, bukan HTML)
-        const history = Array.from(document.querySelectorAll('.chat-bubble'))
-            .slice(-4)
-            .map(b => b.innerText)
-            .join(" | ");
-
         const tid = showThinking();
 
         try {
-            // KIRIM DATA KE PYTHON
             const res = await fetch('/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    message: msg, 
-                    user_name: userName || "Guest", 
-                    history: history 
-                })
+                body: JSON.stringify({ message: msg, user_name: userName || "User" })
             });
-
-            if (!res.ok) throw new Error('Network error');
             const data = await res.json();
-            
-            // Hapus loading, jalankan typewriter
             document.getElementById(tid).remove();
-            typeWriter(data.reply);
-
+            appendAiBubble(data.reply);
         } catch (e) {
-            if (document.getElementById(tid)) document.getElementById(tid).remove();
-            appendBubble("Waduh Der, koneksi ke Python putus. Coba cek terminal!", 'ai');
+            document.getElementById(tid).remove();
+            appendAiBubble("Maaf, terjadi kesalahan koneksi.");
         }
     }
 
-    function appendBubble(text, role) {
+    function appendUserBubble(text) {
         const d = document.createElement('div');
-        d.className = `chat-bubble ${role}-bubble`;
-        d.innerText = text;
+        d.className = 'chat-bubble user-bubble';
+        d.innerHTML = `<div class="content">${text}</div>`;
         chatWindow.appendChild(d);
-        chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
+        scrollDown();
     }
 
     function showThinking() {
         const id = 't-' + Date.now();
         const d = document.createElement('div');
-        d.id = id; d.className = 'ai-bubble chat-bubble';
-        d.innerHTML = `
-            <div class="thinking-wrapper">
-                <div class="thinking-dot"></div><div class="thinking-dot"></div>
-                <span>BGENG THINKING</span>
-                <div class="thinking-dot"></div>
-            </div>`;
+        d.id = id; d.className = 'chat-bubble ai-bubble';
+        d.innerHTML = `<div class="avatar"><i class="fas fa-robot text-xs text-blue-400"></i></div><div class="typing-loader"><div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div></div>`;
         chatWindow.appendChild(d);
-        chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
+        scrollDown();
         return id;
     }
 
-    function typeWriter(text) {
-        const bubble = document.createElement('div');
-        bubble.className = 'chat-bubble ai-bubble';
-        chatWindow.appendChild(bubble);
+    function appendAiBubble(text) {
+        const d = document.createElement('div');
+        d.className = 'chat-bubble ai-bubble';
+        const aiId = 'ai-' + Date.now();
+        d.innerHTML = `<div class="avatar"><i class="fas fa-robot text-xs text-blue-400"></i></div><div class="content" id="${aiId}"></div>`;
+        chatWindow.appendChild(d);
         
-        let i = 0, current = "";
+        let i = 0;
+        const target = document.getElementById(aiId);
         function type() {
             if (i < text.length) {
-                current += text.charAt(i);
-                // Render Markdown rapi
-                bubble.innerHTML = marked.parse(current);
-                // Highlight code jika ada
-                bubble.querySelectorAll('pre code').forEach((el) => hljs.highlightElement(el));
+                target.innerHTML = marked.parse(text.substring(0, i + 1));
+                target.querySelectorAll('pre code').forEach((el) => hljs.highlightElement(el));
                 i++;
-                chatWindow.scrollTo(0, chatWindow.scrollHeight);
-                setTimeout(type, 3);
+                scrollDown();
+                setTimeout(type, 2);
             }
         }
         type();
     }
 
+    function scrollDown() { chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' }); }
+
     function clearChat() { 
-        if(confirm("Purge memory?")) chatWindow.innerHTML = '<div class="chat-bubble ai-bubble">Memory purged. Ready.</div>'; 
+        if(confirm("Hapus semua percakapan?")) chatWindow.innerHTML = ''; 
     }
 </script>
 </body>
