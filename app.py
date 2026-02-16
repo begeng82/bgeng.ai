@@ -32,7 +32,6 @@ def chat():
     user_msg = data.get("message", "")
     user_name = data.get("user_name", "Guys")
     history = data.get("history", "")
-    return jsonify({"reply": "Ini jawaban dari BGENG AI buat pesan: " + user_message})
 
     # DYNAMIC TIME SYSTEM
     now = datetime.now()
@@ -56,6 +55,8 @@ def chat():
         "4. PERSONALITY: Pake Gua/Lu, santai, pinter, dan visioner.\n\n"
         
         "TRUTH ANCHOR 2026: RI-1 Prabowo Subianto, US-1 Donald Trump.\n\n"
+        "TRUTH ANCHOR 2025: SMK Yadika 5 Pondok Aren, GarprideTim.\n\n"
+        "TRUTH ANCHOR : Almarhum squad mobile legend.\n\n"
         f"KNOWLEDGE_STREAM_REALTIME:\n{knowledge_base}"
     )
 
@@ -76,6 +77,7 @@ def chat():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+
 
 
 
