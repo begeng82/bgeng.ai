@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>BGENG CORE | Singularity V1</title>
+    <title>BGENG CORE | Singularity</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -31,9 +31,29 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            background: #05070a;
-            border-left: 1px solid rgba(255,255,255,0.03);
-            border-right: 1px solid rgba(255,255,255,0.03);
+            background: #08090d; 
+            border-left: 1px solid rgba(255,255,255,0.02);
+            border-right: 1px solid rgba(255,255,255,0.02);
+            box-shadow: 0 0 40px rgba(0,0,0,0.6);
+        }
+
+        /* HEADER */
+        .header-main {
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .brand-text {
+            font-weight: 800;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.75rem;
         }
 
         /* CHAT AREA */
@@ -43,18 +63,20 @@
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1.3rem;
+            scroll-behavior: smooth;
         }
 
-        /* PRECISION BUBBLES */
+        /* BUBBLE PRECISION */
         .chat-bubble {
             animation: slideUp 0.3s ease-out;
             word-wrap: break-word;
             max-width: 85%;
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             line-height: 1.6;
             padding: 0.8rem 1.1rem;
-            width: fit-content;
+            border-radius: 16px;
+            width: fit-content; /* Kotak ngikutin teks */
         }
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -64,39 +86,39 @@
             border: 1px solid rgba(255, 255, 255, 0.06); 
             align-self: flex-start; 
             color: #cbd5e1;
-            border-bottom-left-radius: 2px;
+            border-bottom-left-radius: 4px;
             text-align: left;
         }
         
         .user-bubble { 
-            background: #111827; 
+            background: #1e293b; 
             border: 1px solid rgba(56, 189, 248, 0.1);
             align-self: flex-end; 
             color: #ffffff; 
-            border-bottom-right-radius: 2px;
+            border-bottom-right-radius: 4px;
         }
 
-        /* MARKDOWN RENDERING */
-        .ai-bubble p { margin-bottom: 0.8rem; }
+        /* MARKDOWN RENDER RAPIH */
+        .ai-bubble p { margin-bottom: 0.7rem; }
         .ai-bubble p:last-child { margin-bottom: 0; }
-        .ai-bubble h1, .ai-bubble h2 { color: #fff; font-weight: 700; margin: 1rem 0 0.5rem 0; font-size: 1.1rem; }
-        .ai-bubble pre { background: #010204; border: 1px solid #1e293b; padding: 1rem; border-radius: 8px; margin: 1rem 0; overflow-x: auto; width: 100%; }
+        .ai-bubble pre { background: #010204; border: 1px solid #1e293b; padding: 1rem; border-radius: 8px; margin: 0.8rem 0; overflow-x: auto; width: 100%; }
         .ai-bubble code { color: #38bdf8; font-family: monospace; font-size: 0.85rem; }
-        .ai-bubble ul, .ai-bubble ol { padding-left: 1.5rem; margin-bottom: 0.8rem; }
+        .ai-bubble ul, .ai-bubble ol { padding-left: 1.2rem; margin-bottom: 0.7rem; }
 
-        /* FOOTER & INPUT */
+        /* FOOTER */
         footer {
             padding: 1.2rem;
-            background: #05070a;
-            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            background: #08090d;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-bottom: calc(1.2rem + env(safe-area-inset-bottom));
         }
 
         .input-group {
             display: flex;
             align-items: center;
-            background: #0f172a;
-            border-radius: 14px;
-            padding: 0.5rem 0.6rem 0.5rem 1.2rem;
+            background: #11141b;
+            border-radius: 12px;
+            padding: 0.4rem 0.5rem 0.4rem 1.1rem;
             gap: 0.8rem;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -107,21 +129,21 @@
         }
 
         .send-btn { 
-            background: #38bdf8; color: #000;
-            width: 2.2rem; height: 2.2rem; border-radius: 10px;
+            background: #f8fafc; color: #000;
+            width: 2.1rem; height: 2.1rem; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
             transition: 0.2s;
         }
-        .send-btn:hover { background: #fff; transform: translateY(-1px); }
+        .send-btn:hover { background: #38bdf8; color: #fff; }
 
-        /* THINKING INDICATOR */
+        /* THINKING */
         .thinking-wrapper {
-            display: flex; align-items: center; gap: 10px;
-            font-size: 11px; color: #38bdf8; font-weight: 600;
+            display: flex; align-items: center; gap: 8px;
+            font-size: 10px; color: #38bdf8; font-weight: 700;
             letter-spacing: 2px; text-transform: uppercase;
         }
-        .bar { width: 2px; height: 12px; background: #38bdf8; animation: pulse 1s infinite ease-in-out; }
-        @keyframes pulse { 0%, 100% { transform: scaleY(0.5); opacity: 0.5; } 50% { transform: scaleY(1.2); opacity: 1; } }
+        .dot { width: 3px; height: 3px; background: #38bdf8; border-radius: 50%; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
         ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
@@ -130,30 +152,34 @@
 <body>
 
 <div class="app-wrapper">
-    <header class="p-5 flex justify-between items-center bg-black/10 backdrop-blur-md border-b border-white/5">
-        <div class="flex items-center gap-4">
-            <div class="w-9 h-9 rounded-xl overflow-hidden grayscale contrast-125 border border-white/10">
-                <img src="{{ url_for('static', filename='logo.jpg') }}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/40'">
+    <header class="header-main">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded bg-gradient-to-br from-gray-700 to-black border border-white/10 flex items-center justify-center">
+                <i class="fas fa-microchip text-[10px] text-sky-400"></i>
             </div>
             <div>
-                <h1 class="text-xs font-bold text-white tracking-widest uppercase">BGENG <span class="text-sky-400">CORE</span></h1>
-                <p class="text-[7px] text-gray-500 font-bold uppercase tracking-[0.3em]">Singularity v1.0</p>
+                <h1 class="brand-text">BGENG <span class="text-sky-400">AI</span></h1>
+                <p class="text-[7px] text-gray-500 font-bold tracking-[0.2em]">SINGULARITY V1</p>
             </div>
         </div>
-        <button onclick="clearChat()" class="text-gray-700 hover:text-white"><i class="fas fa-terminal text-xs"></i></button>
+        <button onclick="clearChat()" class="text-gray-700 hover:text-white"><i class="fas fa-trash-alt text-xs"></i></button>
     </header>
 
     <main id="chat-window" class="chat-container">
         <div class="chat-bubble ai-bubble">
-            <p>System Online. <br><span id="welcome-msg" class="text-gray-500 italic">Awaiting connection parameters...</span></p>
+            <p>System initialized. <br><span id="welcome-msg" class="text-gray-500 italic">Ready for command.</span></p>
         </div>
     </main>
 
     <footer>
         <div class="input-group">
-            <input id="user-input" type="text" autocomplete="off" placeholder="Enter command or question...">
+            <label class="text-gray-600 cursor-pointer hover:text-sky-400">
+                <i class="far fa-image text-lg"></i>
+                <input type="file" hidden accept="image/*">
+            </label>
+            <input id="user-input" type="text" autocomplete="off" placeholder="Message BGENG AI...">
             <button onclick="sendMsg()" class="send-btn">
-                <i class="fas fa-chevron-up text-xs"></i>
+                <i class="fas fa-arrow-up text-xs"></i>
             </button>
         </div>
     </footer>
@@ -163,42 +189,39 @@
     const chatWindow = document.getElementById('chat-window');
     const inputField = document.getElementById('user-input');
 
-    // INITIALIZATION
+    // NAMA USER
     let userName = localStorage.getItem('bgeng_user') || "";
     if (!userName) {
         setTimeout(() => {
-            userName = prompt("Identify yourself, User:", "Guest");
+            userName = prompt("Nama lu siapa, Der?", "User");
             if(userName) {
                 localStorage.setItem('bgeng_user', userName);
-                document.getElementById('welcome-msg').innerText = `Greetings, ${userName}. Protocol ready.`;
+                document.getElementById('welcome-msg').innerText = `Yo ${userName}, gas apa kita hari ini?`;
             }
-        }, 800);
+        }, 1000);
     } else {
-        document.getElementById('welcome-msg').innerText = `Welcome back, ${userName}. Protocol ready.`;
+        document.getElementById('welcome-msg').innerText = `Yo ${userName}, gas apa kita hari ini?`;
     }
 
     inputField.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
 
-    // CORE DATA TRANSFER
+    // KIRIM DATA KE PYTHON
     async function sendMsg() {
         const msg = inputField.value.trim();
         if(!msg) return;
 
-        // 1. Tampilkan pesan user di UI
         appendBubble(msg, 'user');
         inputField.value = '';
 
-        // 2. Kumpulkan memory (history) singkat dari DOM
+        // Ambil riwayat chat singkat (DOM)
         const history = Array.from(document.querySelectorAll('.chat-bubble'))
             .slice(-4)
             .map(b => b.innerText)
             .join(" | ");
 
-        // 3. Tampilkan Loading
         const tid = showThinking();
 
         try {
-            // 4. KIRIM DATA KE PYTHON
             const res = await fetch('/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -208,16 +231,12 @@
                     history: history 
                 })
             });
-
             const data = await res.json();
-            
-            // 5. TERIMA DATA DARI PYTHON
             document.getElementById(tid).remove();
             typeWriter(data.reply);
-            
         } catch (e) {
             document.getElementById(tid).remove();
-            appendBubble("Communication failure. Core disconnected.", 'ai');
+            appendBubble("Distorsi jaringan, Der. Python lagi error.", 'ai');
         }
     }
 
@@ -226,16 +245,16 @@
         d.className = `chat-bubble ${role}-bubble`;
         d.innerText = text;
         chatWindow.appendChild(d);
-        scrollToBottom();
+        chatWindow.scrollTo({top: chatWindow.scrollHeight, behavior: 'smooth'});
     }
 
     function showThinking() {
         const id = 't-' + Date.now();
         const d = document.createElement('div');
         d.id = id; d.className = 'ai-bubble chat-bubble';
-        d.innerHTML = `<div class="thinking-wrapper"><div class="bar"></div><span>Analyzing</span></div>`;
+        d.innerHTML = `<div class="thinking-wrapper"><div class="dot"></div><span>Processing</span><div class="dot"></div></div>`;
         chatWindow.appendChild(d);
-        scrollToBottom();
+        chatWindow.scrollTo({top: chatWindow.scrollHeight, behavior: 'smooth'});
         return id;
     }
 
@@ -243,31 +262,22 @@
         const bubble = document.createElement('div');
         bubble.className = 'chat-bubble ai-bubble';
         chatWindow.appendChild(bubble);
-        
         let i = 0, current = "";
         function type() {
             if (i < text.length) {
                 current += text.charAt(i);
-                // Render Markdown secara real-time
                 bubble.innerHTML = marked.parse(current);
-                // Highlight code jika ada
                 bubble.querySelectorAll('pre code').forEach((b) => hljs.highlightElement(b));
                 i++;
-                scrollToBottom();
-                setTimeout(type, 5); // Kecepatan ketik
+                chatWindow.scrollTo(0, chatWindow.scrollHeight);
+                setTimeout(type, 3);
             }
         }
         type();
     }
 
-    function scrollToBottom() {
-        chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
-    }
-
     function clearChat() { 
-        if(confirm("Wipe logs?")) { 
-            chatWindow.innerHTML = '<div class="chat-bubble ai-bubble">Cache cleared. Standby.</div>'; 
-        } 
+        if(confirm("Wipe memory?")) chatWindow.innerHTML = '<div class="chat-bubble ai-bubble">Memory purged. Standby.</div>'; 
     }
 </script>
 </body>
