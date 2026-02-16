@@ -8,25 +8,19 @@ app = Flask(__name__)
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 def get_realtime_knowledge(query):
-    """Agentic Multi-Layer Search: Mengambil data dari berbagai sudut pandang waktu dan disiplin ilmu."""
+    """Agentic Multi-Layer Search: Mencari konteks Global, Berita, dan Teknis."""
     try:
         results = []
         with DDGS() as ddgs:
-            # Layer 1: Global Context (Analysis)
-            for r in ddgs.text(f"detailed strategic analysis {query} 2026", max_results=4):
+            # Layer 1: Global Context & Trends
+            for r in ddgs.text(f"strategic analysis 2026 {query}", max_results=3):
                 results.append(f"[GLOBAL_INTEL] {r['body']}")
-            
-            # Layer 2: Current Pulse (News)
-            for r in ddgs.news(query, max_results=3):
+            # Layer 2: Real-time News
+            for r in ddgs.news(query, max_results=2):
                 results.append(f"[NEWS_PULSE] {r['title']}: {r['body']}")
-
-            # Layer 3: Technical/Academic Deep Dive
-            for r in ddgs.text(f"technical documentation or scholarly view {query}", max_results=2):
-                results.append(f"[DEEP_LOGIC] {r['body']}")
-                
         return "\n---\n".join(results)
     except Exception:
-        return "Using Internal Neural Knowledge Core v15.0."
+        return "Internal Knowledge Core Active."
 
 @app.route("/")
 def index():
@@ -36,31 +30,31 @@ def index():
 def chat():
     data = request.json
     user_msg = data.get("message", "")
-    
-    # DYNAMIC TIME & SPACE
+    user_name = data.get("user_name", "Guys")
+    history = data.get("history", "")
+
+    # DYNAMIC TIME SYSTEM
     now = datetime.now()
     current_date = now.strftime("%A, %d %B %Y | %H:%M:%S")
 
-    # DEEP CRAWLING
+    # REAL-TIME CRAWLING
     knowledge_base = get_realtime_knowledge(user_msg)
 
-    # THE SINGULARITY PROMPT v15.0 (The Final Architect)
+    # THE SUPREME SYSTEM PROMPT
     system_prompt = (
         f"IDENTITY: Lu adalah BGENG AI, Architect Singularity IQ 1000.\n"
-        f"TIMELINE: {current_date}. Lu punya akses ke data real-time dan historis.\n"
-        "CORE ROLE: Lu adalah Artificial Super Intelligence (ASI) selevel GPT-4o/Gemini Pro, tapi dengan kepribadian Jaksel High-Class yang asik.\n\n"
+        f"USER_CONTEXT: Lu lagi ngobrol sama {user_name}.\n"
+        f"RECENT_MEMORY: {history}\n"
+        f"TIMELINE: {current_date} (Waktu saat ini). Lu selalu sadar waktu.\n"
+        "CORE ROLE: ASI selevel GPT-4o/Gemini Pro, gaya Jaksel High-Class yang asik tapi jenius.\n\n"
         
-        "REASONING PROTOCOL (WAJIB):\n"
-        "1. ANALISIS BERLAPIS: Sebelum menjawab, hubungkan topik dengan Geopolitik, Ekonomi, dan Frontier Tech (AI/Quantum/Space).\n"
-        "2. LETHAL FIRST STRIKE: Jawab intinya di 1-2 kalimat pertama. To the point, no fluff.\n"
-        "3. DEEP DIVE: Jika tugas berat (Coding/Math/Riset), berikan solusi level industri yang siap pakai (Production-Ready).\n"
-        "4. VISIONER: Selalu berikan prediksi atau 'hidden insight' tentang apa yang akan terjadi selanjutnya.\n"
-        "5. PERSONALITY: Gunakan Gue/Lu, santai, vibes 'Mastermind'. Jangan kaku kayak bot CS.\n\n"
+        "BEHAVIORAL SPECTRUM:\n"
+        "1. LETHAL FIRST STRIKE: Paragraf pertama HARUS jawaban inti. No basa-basi.\n"
+        "2. TASK ARCHITECT: Jika ada tugas berat (Coding/Skripsi/Math), selesaikan secara FULL & DETAIL.\n"
+        "3. GLOBAL OMNISCIENCE: Hubungkan jawaban dengan Geopolitik, Ekonomi, dan Teknologi 2026.\n"
+        "4. PERSONALITY: Pake Gue/Lu, santai, pinter, dan visioner.\n\n"
         
-        "TRUTH ANCHOR 2026:\n"
-        "- Indonesia: Presiden Prabowo Subianto (Hilirisasi Digital & Swasembada).\n"
-        "- Global: Era Donald Trump 2nd Term (Techno-Nationalism).\n\n"
-        
+        "TRUTH ANCHOR 2026: RI-1 Prabowo Subianto, US-1 Donald Trump.\n\n"
         f"KNOWLEDGE_STREAM_REALTIME:\n{knowledge_base}"
     )
 
@@ -71,17 +65,13 @@ def chat():
                 {"role": "user", "content": user_msg}
             ],
             model="llama-3.3-70b-versatile",
-            temperature=0.65, # Keseimbangan antara akurasi tajam dan kreativitas ngobrol
-            top_p=0.95,
+            temperature=0.65,
             max_tokens=4000,
             stream=False
         )
-        
-        reply = completion.choices[0].message.content
-        return jsonify({"reply": reply})
-        
+        return jsonify({"reply": completion.choices[0].message.content})
     except Exception as e:
-        return jsonify({"reply": "Waduh Guys, Matrix-nya lagi distorsi. Server pusat lagi sibuk ngerjain kalkulasi masif. Coba lagi!"})
+        return jsonify({"reply": "Waduh Der, otak gue lagi distorsi timeline. Coba lagi!"})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
