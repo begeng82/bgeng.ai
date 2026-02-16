@@ -58,24 +58,42 @@
             margin-top: 1rem;
         }
 
-        .history-item {
-            padding: 0.75rem 1rem;
+        .history-item-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             border-radius: 12px;
+            transition: 0.2s;
+            margin-bottom: 0.25rem;
+            padding-right: 0.5rem;
+        }
+
+        .history-item-wrapper:hover { background: #2f2f2f; }
+
+        .history-item {
+            flex: 1;
+            padding: 0.75rem 1rem;
             cursor: pointer;
             font-size: 0.85rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            transition: 0.2s;
             color: #aaa;
-            margin-bottom: 0.25rem;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .history-item:hover { background: #2f2f2f; color: #fff; }
-        .history-item i { font-size: 0.8rem; opacity: 0.7; }
+        .history-item-wrapper:hover .history-item { color: #fff; }
+
+        .delete-history {
+            color: #555;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .delete-history:hover { color: #ff4d4d; }
 
         /* MAIN WRAPPER */
         .app-wrapper {
@@ -134,12 +152,9 @@
 
         .send-circle { width: 40px; height: 40px; border-radius: 50%; background: #fff; color: #000; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .send-circle:hover { transform: scale(1.05); background: #e0e0e0; }
-        .send-circle:disabled { background: #333; color: #666; }
 
         .typing-loader { display: flex; gap: 5px; padding: 10px 0; }
         .t-dot { width: 6px; height: 6px; background: #666; border-radius: 50%; animation: pulse 1.4s infinite; }
-        .t-dot:nth-child(2) { animation-delay: 0.2s; }
-        .t-dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
         ::-webkit-scrollbar { width: 5px; }
@@ -151,7 +166,7 @@
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div id="sidebar">
     <div class="flex justify-between items-center mb-4">
-        <h2 class="font-bold text-white tracking-tight">Recent Intelligence</h2>
+        <h2 class="font-bold text-white tracking-tight">Intelligence History</h2>
         <button onclick="toggleSidebar()" class="text-gray-500 hover:text-white transition-colors"><i class="fas fa-times"></i></button>
     </div>
     <button onclick="createNewChat()" class="w-full py-2 px-4 rounded-xl border border-dashed border-gray-700 text-gray-400 text-sm hover:bg-gray-800 hover:text-white transition-all mb-4 text-left">
@@ -170,7 +185,7 @@
             <img src="{{ url_for('static', filename='logo.jpg') }}" class="user-logo" onerror="this.src='https://via.placeholder.com/32'">
             <div class="brand-logo">BGENG <span class="text-gray-500 font-medium">AI</span></div>
         </div>
-        <button onclick="clearChat()" class="text-gray-500 hover:text-red-400 p-2 transition-colors">
+        <button onclick="clearCurrentChat()" class="text-gray-500 hover:text-red-400 p-2 transition-colors">
             <i class="far fa-trash-can text-lg"></i>
         </button>
     </header>
@@ -178,7 +193,7 @@
     <main id="chat-window" class="chat-container">
         <div class="chat-bubble ai-bubble" id="initial-msg">
             <div class="avatar"><i class="fas fa-robot text-xs text-blue-400"></i></div>
-            <div class="content">Halo, gue BGENG AI. Ada intelijen apa yang mau kita bahas hari ini?</div>
+            <div class="content">Yo, gue BGENG AI. Ada intelijen apa yang mau kita bahas hari ini Der?</div>
         </div>
     </main>
 
@@ -193,7 +208,7 @@
                 <i class="fas fa-arrow-up"></i>
             </button>
         </div>
-        <p class="text-[10px] text-center text-gray-600 mt-3">Architect Singularity v3.3.70b. Intelligence may vary.</p>
+        <p class="text-[10px] text-center text-gray-600 mt-3">Architect Singularity v3.3.70b. BGENG AI can make mistakes.</p>
     </footer>
 </div>
 
@@ -205,9 +220,8 @@
     const historyContainer = document.getElementById('history-container');
 
     let userName = localStorage.getItem('bgeng_user') || "";
-    let savedChats = JSON.parse(localStorage.getItem('bgeng_sessions')) || [];
+    let savedSessions = JSON.parse(localStorage.getItem('bgeng_sessions')) || [];
 
-    // Prompt nama jika belum ada
     if (!userName) {
         setTimeout(() => {
             let n = prompt("Siapa nama lu Der?", "User");
@@ -215,7 +229,6 @@
         }, 800);
     }
 
-    // Init history on load
     renderHistory();
 
     function toggleSidebar() {
@@ -229,7 +242,7 @@
         const msg = inputField.value.trim();
         if(!msg) return;
 
-        // Ambil history teks saja dari DOM untuk dikirim ke Python (4 terakhir)
+        // Collect context (last 4 contents) to send to Python
         const historyText = Array.from(document.querySelectorAll('.content'))
             .slice(-4)
             .map(c => c.innerText)
@@ -246,15 +259,13 @@
                 body: JSON.stringify({ 
                     message: msg, 
                     user_name: userName || "Guys",
-                    history: historyText // Sesuai dengan variable di app.py lu
+                    history: historyText 
                 })
             });
             const data = await res.json();
             document.getElementById(tid).remove();
             
             appendAiBubble(data.reply);
-            
-            // Simpan ke local storage history
             saveSession(msg, data.reply);
 
         } catch (e) {
@@ -296,76 +307,83 @@
         
         let i = 0;
         const target = document.getElementById(aiId);
-        
-        // Typewriter effect + Markdown parsing
         function type() {
             if (i < text.length) {
                 target.innerHTML = marked.parse(text.substring(0, i + 1));
                 target.querySelectorAll('pre code').forEach((el) => hljs.highlightElement(el));
                 i++;
-                if(i % 5 === 0) scrollDown(); // Scroll tiap 5 karakter biar mulus
+                if(i % 5 === 0) scrollDown();
                 setTimeout(type, 1);
-            } else {
-                scrollDown();
-            }
+            } else { scrollDown(); }
         }
         type();
     }
 
     function scrollDown() { chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' }); }
 
-    function clearChat() { 
-        if(confirm("Hapus sesi chat saat ini?")) {
+    function clearCurrentChat() { 
+        if(confirm("Hapus tampilan chat ini?")) {
             chatWindow.innerHTML = `
                 <div class="chat-bubble ai-bubble">
                     <div class="avatar"><i class="fas fa-robot text-xs text-blue-400"></i></div>
-                    <div class="content">Sesi dibersihkan. Apa yang baru Der?</div>
+                    <div class="content">Sesi dibersihkan. Gas nanya apa lagi Der?</div>
                 </div>`;
         }
     }
 
     function createNewChat() {
-        chatWindow.innerHTML = document.getElementById('initial-msg').outerHTML;
+        chatWindow.innerHTML = `
+            <div class="chat-bubble ai-bubble">
+                <div class="avatar"><i class="fas fa-robot text-xs text-blue-400"></i></div>
+                <div class="content">Sesi Baru Aktif. Apa intelijen hari ini?</div>
+            </div>`;
         toggleSidebar();
     }
 
-    // --- HISTORY LOGIC ---
+    // --- HISTORY SYSTEM ---
 
     function saveSession(userMsg, aiReply) {
-        // Cek apakah chat ini sudah ada (update) atau baru (push)
-        // Sederhananya, simpan percakapan terakhir ke list
-        const sessionTitle = userMsg.length > 30 ? userMsg.substring(0, 30) + '...' : userMsg;
-        const newSession = {
-            id: Date.now(),
-            title: sessionTitle,
-            user: userMsg,
-            ai: aiReply,
-            date: new Date().toLocaleDateString()
-        };
-        savedChats.unshift(newSession);
-        if(savedChats.length > 15) savedChats.pop(); // Limit 15 history
-        localStorage.setItem('bgeng_sessions', JSON.stringify(savedChats));
+        const title = userMsg.length > 25 ? userMsg.substring(0, 25) + "..." : userMsg;
+        const session = { id: Date.now(), title, user: userMsg, ai: aiReply };
+        savedSessions.unshift(session);
+        if(savedSessions.length > 20) savedSessions.pop();
+        localStorage.setItem('bgeng_sessions', JSON.stringify(savedSessions));
         renderHistory();
     }
 
     function renderHistory() {
         historyContainer.innerHTML = '';
-        savedChats.forEach(session => {
-            const item = document.createElement('div');
-            item.className = 'history-item';
-            item.innerHTML = `<i class="far fa-comment-alt"></i> ${session.title}`;
-            item.onclick = () => {
-                loadSession(session);
-                toggleSidebar();
-            };
-            historyContainer.appendChild(item);
+        savedSessions.forEach((session, index) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'history-item-wrapper';
+            
+            wrapper.innerHTML = `
+                <div class="history-item" onclick="loadSession(${index})">
+                    <i class="far fa-message"></i> ${session.title}
+                </div>
+                <div class="delete-history" onclick="deleteSession(event, ${index})">
+                    <i class="fas fa-trash-alt text-xs"></i>
+                </div>
+            `;
+            historyContainer.appendChild(wrapper);
         });
     }
 
-    function loadSession(session) {
+    function loadSession(index) {
+        const session = savedSessions[index];
         chatWindow.innerHTML = '';
         appendUserBubble(session.user);
         appendAiBubble(session.ai);
+        toggleSidebar();
+    }
+
+    function deleteSession(event, index) {
+        event.stopPropagation(); // Prevent loading session when clicking delete
+        if(confirm("Hapus history ini?")) {
+            savedSessions.splice(index, 1);
+            localStorage.setItem('bgeng_sessions', JSON.stringify(savedSessions));
+            renderHistory();
+        }
     }
 </script>
 </body>
