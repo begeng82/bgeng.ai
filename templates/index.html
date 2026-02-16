@@ -13,130 +13,61 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-        
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        :root {
-            --bg-color: #0e0e10;
-            --sidebar-bg: #171719;
-            --accent-color: #2f2f2f;
-        }
+        :root { --bg-color: #0e0e10; --sidebar-bg: #171719; --accent-color: #2f2f2f; }
 
         html, body { 
-            background-color: var(--bg-color); 
-            margin: 0; padding: 0;
-            height: 100%; width: 100%;
-            overflow: hidden;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            color: #e3e3e3;
+            background-color: var(--bg-color); margin: 0; padding: 0;
+            height: 100%; width: 100%; overflow: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif; color: #e3e3e3;
         }
         
-        /* --- SIDEBAR --- */
         #sidebar {
-            position: fixed;
-            left: -100%;
-            top: 0;
-            width: 85%;
-            max-width: 300px;
-            height: 100%;
-            background: var(--sidebar-bg);
-            z-index: 100;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-right: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            flex-direction: column;
-            padding: 1.5rem 1rem;
+            position: fixed; left: -100%; top: 0; width: 85%; max-width: 300px; height: 100%;
+            background: var(--sidebar-bg); z-index: 100; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; padding: 1.5rem 1rem;
         }
-
         #sidebar.open { left: 0; }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 90; backdrop-filter: blur(4px); }
 
-        .sidebar-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            z-index: 90;
-            backdrop-filter: blur(4px);
-        }
+        .app-wrapper { width: 100%; max-width: 1000px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; position: relative; }
+        header { padding: 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .user-logo { width: 32px; height: 32px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
 
-        /* --- HISTORY --- */
-        .history-list { flex: 1; overflow-y: auto; margin-top: 1rem; }
-        .history-item-wrapper {
-            display: flex; align-items: center; justify-content: space-between;
-            border-radius: 12px; transition: 0.2s; margin-bottom: 0.5rem;
-        }
-        .history-item-wrapper:hover { background: var(--accent-color); }
-        .history-item {
-            flex: 1; padding: 0.8rem 1rem; cursor: pointer; font-size: 0.85rem;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            color: #aaa; display: flex; align-items: center; gap: 10px;
-        }
-        .delete-history { color: #444; padding: 0.8rem; cursor: pointer; transition: 0.2s; }
-        .delete-history:hover { color: #ff4d4d; }
-
-        /* --- MAIN LAYOUT --- */
-        .app-wrapper {
-            width: 100%;
-            max-width: 1000px;
-            margin: 0 auto;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        header {
-            padding: 1rem;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            background: var(--bg-color);
-        }
-
-        .user-logo { width: 32px; height: 32px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
-
-        .chat-container { 
-            flex: 1; overflow-y: auto; padding: 1rem;
-            display: flex; flex-direction: column; scroll-behavior: smooth;
-        }
-
-        /* --- BUBBLES --- */
+        .chat-container { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; scroll-behavior: smooth; }
         .chat-bubble { margin-bottom: 2rem; width: 100%; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-        .avatar { width: 28px; height: 28px; border-radius: 50%; margin-bottom: 0.6rem; display: flex; align-items: center; justify-content: center; background: #1e1e20; border: 1px solid #333; }
 
         .user-bubble { align-self: flex-end; width: auto; max-width: 90%; }
         .user-bubble .content { background: var(--accent-color); padding: 0.8rem 1rem; border-radius: 1.2rem; color: #fff; font-size: 0.95rem; }
 
         .ai-bubble { align-self: flex-start; width: 100%; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 1.2rem; }
-        .ai-bubble .content { line-height: 1.7; color: #e3e3e3; font-size: 0.95rem; overflow-wrap: break-word; }
+        .ai-bubble .content { line-height: 1.7; color: #e3e3e3; font-size: 0.95rem; }
 
-        /* --- THINKING ANIMATION --- */
-        .thinking-txt { font-size: 0.75rem; color: #666; margin-bottom: 8px; font-style: italic; display: flex; align-items: center; gap: 8px; }
-        .typing-loader { display: flex; gap: 5px; padding: 5px 0; }
-        .t-dot { width: 6px; height: 6px; background: #4a90e2; border-radius: 50%; animation: pulse 1.4s infinite; }
+        /* --- THINKING NO ROBOT --- */
+        .thinking-wrapper { padding: 10px 0; }
+        .thinking-txt { font-size: 0.8rem; color: #4a90e2; font-weight: 500; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .typing-loader { display: flex; gap: 4px; }
+        .t-dot { width: 5px; height: 5px; background: #4a90e2; border-radius: 50%; animation: pulse 1.4s infinite; }
         .t-dot:nth-child(2) { animation-delay: 0.2s; }
         .t-dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes pulse { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-        /* --- FOOTER --- */
         footer { padding: 1rem; background: var(--bg-color); }
-        .input-dock { 
-            background: #1e1e20; border-radius: 24px; padding: 0.5rem 0.8rem; 
-            display: flex; align-items: center; gap: 0.8rem; border: 1px solid rgba(255,255,255,0.05); 
-        }
-        #user-input { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: 1rem; padding: 0.6rem 0; }
-        .icon-btn { color: #666; cursor: pointer; transition: 0.2s; font-size: 1.2rem; }
-        .icon-btn:hover { color: #fff; }
-        .send-circle { width: 36px; height: 36px; border-radius: 50%; background: #fff; color: #000; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: 0.2s; }
-        .send-circle:hover { transform: scale(1.1); }
+        .input-dock { background: #1e1e20; border-radius: 24px; padding: 0.5rem 0.8rem; display: flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(255,255,255,0.05); }
+        #user-input { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: 1rem; padding: 0.6rem 0.5rem; }
+        
+        .icon-btn { color: #666; cursor: pointer; padding: 0.5rem; transition: 0.2s; }
+        .icon-btn:hover { color: #4a90e2; }
+        .send-circle { width: 36px; height: 36px; border-radius: 50%; background: #fff; color: #000; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .send-circle:hover { background: #4a90e2; color: #fff; }
 
-        @media (min-width: 768px) {
-            .chat-container { padding: 2rem; }
-            .user-bubble { max-width: 75%; }
-            .avatar { width: 32px; height: 32px; }
-            footer { padding: 1rem 2rem 2rem; }
-        }
+        .history-list { flex: 1; overflow-y: auto; }
+        .history-item-wrapper { display: flex; align-items: center; justify-content: space-between; border-radius: 12px; margin-bottom: 0.5rem; }
+        .history-item-wrapper:hover { background: var(--accent-color); }
+        .history-item { flex: 1; padding: 0.8rem; cursor: pointer; font-size: 0.85rem; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        @media (min-width: 768px) { .chat-container { padding: 2rem; } .user-bubble { max-width: 75%; } }
     </style>
 </head>
 <body>
@@ -144,10 +75,10 @@
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div id="sidebar">
     <div class="flex justify-between items-center mb-6">
-        <h2 class="font-bold text-white text-lg tracking-tight">Intelligence History</h2>
-        <button onclick="toggleSidebar()" class="text-gray-500 p-2"><i class="fas fa-times"></i></button>
+        <h2 class="font-bold text-white text-lg">Intel History</h2>
+        <button onclick="toggleSidebar()" class="text-gray-500"><i class="fas fa-times"></i></button>
     </div>
-    <button onclick="createNewChat()" class="w-full py-3 px-4 rounded-xl border border-dashed border-gray-700 text-gray-400 text-sm hover:bg-gray-800 hover:text-white transition-all mb-4 text-left">
+    <button onclick="createNewChat()" class="w-full py-3 px-4 rounded-xl border border-dashed border-gray-700 text-gray-400 text-sm mb-4 text-left hover:bg-gray-800">
         <i class="fas fa-plus mr-2 text-xs"></i> New Session
     </button>
     <div id="history-container" class="history-list"></div>
@@ -156,92 +87,96 @@
 <div class="app-wrapper">
     <header>
         <div class="header-left flex items-center gap-3">
-            <button onclick="toggleSidebar()" class="text-gray-400 p-2 -ml-2">
-                <i class="fas fa-bars text-lg"></i>
-            </button>
-            <img src="/static/logo.jpg" class="user-logo" onerror="this.src='https://ui-avatars.com/api/?name=BGENG&background=1e1e20&color=fff'">
-            <div class="brand-logo font-bold text-white">BGENG <span class="text-gray-500 font-medium">AI</span></div>
+            <button onclick="toggleSidebar()" class="text-gray-400 p-2"><i class="fas fa-bars"></i></button>
+            <img src="/static/logo.jpg" class="user-logo" onerror="this.src='https://ui-avatars.com/api/?name=B&background=1e1e20&color=fff'">
+            <div class="brand-logo font-bold">BGENG <span class="text-gray-400 font-medium">AI</span></div>
         </div>
-        <button onclick="clearCurrentChat()" class="text-gray-500 hover:text-red-400 p-2">
-            <i class="far fa-trash-can text-lg"></i>
-        </button>
+        <button onclick="clearCurrentChat()" class="text-gray-500 hover:text-red-400"><i class="far fa-trash-can"></i></button>
     </header>
 
     <main id="chat-window" class="chat-container">
-        <div class="chat-bubble ai-bubble" id="initial-msg">
-            <div class="avatar"><i class="fas fa-robot text-xs text-blue-400"></i></div>
+        <div class="chat-bubble ai-bubble">
             <div class="content">Yo Der, gue BGENG AI. Ada intelijen apa hari ini?</div>
         </div>
     </main>
 
     <footer>
         <div class="input-dock">
-            <label class="icon-btn px-2">
+            <label class="icon-btn">
                 <i class="far fa-image"></i>
-                <input type="file" id="file-input" hidden accept="image/*">
+                <input type="file" id="file-input" hidden accept="image/*" onchange="handleFileUpload(this)">
             </label>
-            
-            <input id="user-input" type="text" autocomplete="off" placeholder="Tanya BGENG AI...">
-            
-            <button id="send-btn" onclick="sendMsg()" class="send-circle">
-                <i class="fas fa-arrow-up"></i>
-            </button>
+            <input id="user-input" type="text" placeholder="Tanya BGENG AI..." autocomplete="off">
+            <button id="send-btn" onclick="sendMsg()" class="send-circle"><i class="fas fa-arrow-up"></i></button>
         </div>
-        <p class="text-[9px] text-center text-gray-700 mt-4 uppercase tracking-widest">Architect Singularity v3.3.70b</p>
+        <p class="text-[9px] text-center text-gray-700 mt-4 tracking-widest uppercase">Architect Singularity v3.3.70b</p>
     </footer>
 </div>
 
 <script>
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
     const chatWindow = document.getElementById('chat-window');
     const inputField = document.getElementById('user-input');
     const historyContainer = document.getElementById('history-container');
-
-    let userName = localStorage.getItem('bgeng_user') || "";
     let savedSessions = JSON.parse(localStorage.getItem('bgeng_sessions')) || [];
 
-    if (!userName) {
-        setTimeout(() => {
-            let n = prompt("Nama lu siapa Der?", "User");
-            if(n) { userName = n; localStorage.setItem('bgeng_user', n); }
-        }, 800);
+    // Tanda file yang terpilih (Optional buat backend)
+    function handleFileUpload(input) {
+        if (input.files && input.files[0]) {
+            alert("File " + input.files[0].name + " terpilih! (Siap dikirim ke Python)");
+            // Lu bisa tambahin logika upload di sini kalau perlu
+        }
     }
-
-    renderHistory();
-
-    function toggleSidebar() {
-        sidebar.classList.toggle('open');
-        overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
-    }
-
-    inputField.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
 
     async function sendMsg() {
         const msg = inputField.value.trim();
         if(!msg) return;
 
-        const historyText = Array.from(document.querySelectorAll('.content'))
-            .slice(-4).map(c => c.innerText).join(" | ");
+        // Ambil riwayat singkat buat konteks
+        const context = Array.from(document.querySelectorAll('.content'))
+            .slice(-3).map(c => c.innerText).join(" | ");
 
         appendUserBubble(msg);
         inputField.value = '';
         const tid = showThinking();
 
         try {
+            // KIRIM KE PYTHON (FLASK)
             const res = await fetch('/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: msg, user_name: userName || "User", history: historyText })
+                body: JSON.stringify({ 
+                    message: msg, 
+                    context: context 
+                })
             });
+            
             const data = await res.json();
             document.getElementById(tid).remove();
-            appendAiBubble(data.reply);
+            
+            // Terima reply dari Python
+            appendAiBubble(data.reply || "Gagal dapet respon Der.");
             saveSession(msg, data.reply);
+            
         } catch (e) {
             if(document.getElementById(tid)) document.getElementById(tid).remove();
-            appendAiBubble("Koneksi lagi bapuk Der, coba lagi.");
+            appendAiBubble("Waduh Der, timeline lagi distorsi. Coba lagi!");
         }
+    }
+
+    function showThinking() {
+        const id = 't-' + Date.now();
+        const d = document.createElement('div');
+        d.id = id; d.className = 'chat-bubble ai-bubble';
+        d.innerHTML = `
+            <div class="thinking-wrapper">
+                <div class="thinking-txt">BGENG is thinking...</div>
+                <div class="typing-loader">
+                    <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
+                </div>
+            </div>`;
+        chatWindow.appendChild(d);
+        scrollDown();
+        return id;
     }
 
     function appendUserBubble(text) {
@@ -252,26 +187,11 @@
         scrollDown();
     }
 
-    function showThinking() {
-        const id = 't-' + Date.now();
-        const d = document.createElement('div');
-        d.id = id; d.className = 'chat-bubble ai-bubble';
-        d.innerHTML = `
-            <div class="avatar"><i class="fas fa-robot text-xs text-blue-400"></i></div>
-            <div class="thinking-txt">BGENG is thinking...</div>
-            <div class="typing-loader">
-                <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
-            </div>`;
-        chatWindow.appendChild(d);
-        scrollDown();
-        return id;
-    }
-
     function appendAiBubble(text) {
         const d = document.createElement('div');
         d.className = 'chat-bubble ai-bubble';
         const aiId = 'ai-' + Date.now();
-        d.innerHTML = `<div class="avatar"><i class="fas fa-robot text-xs text-blue-400"></i></div><div class="content" id="${aiId}"></div>`;
+        d.innerHTML = `<div class="content" id="${aiId}"></div>`;
         chatWindow.appendChild(d);
         
         let i = 0;
@@ -281,62 +201,47 @@
                 target.innerHTML = marked.parse(text.substring(0, i + 1));
                 target.querySelectorAll('pre code').forEach((el) => hljs.highlightElement(el));
                 i++;
-                if(i % 10 === 0) scrollDown();
-                setTimeout(type, 2);
+                if(i % 5 === 0) scrollDown();
+                setTimeout(type, 1);
             } else { scrollDown(); }
         }
         type();
     }
 
     function scrollDown() { chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' }); }
-
-    function clearCurrentChat() {
-        if(confirm("Hapus chat di layar?")) {
-            chatWindow.innerHTML = `<div class="chat-bubble ai-bubble"><div class="avatar"><i class="fas fa-robot text-xs text-blue-400"></i></div><div class="content">Sesi dibersihkan. Apa yang baru Der?</div></div>`;
-        }
-    }
-
-    function createNewChat() {
-        chatWindow.innerHTML = `<div class="chat-bubble ai-bubble"><div class="avatar"><i class="fas fa-robot text-xs text-blue-400"></i></div><div class="content">Sesi baru aktif. Silahkan nanya Der.</div></div>`;
-        toggleSidebar();
-    }
-
-    function saveSession(userMsg, aiReply) {
-        const title = userMsg.length > 20 ? userMsg.substring(0, 20) + "..." : userMsg;
-        savedSessions.unshift({ id: Date.now(), title, user: userMsg, ai: aiReply });
-        if(savedSessions.length > 20) savedSessions.pop();
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebar-overlay').style.display = document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none'; }
+    function clearCurrentChat() { if(confirm("Bersihkan layar?")) chatWindow.innerHTML = '<div class="chat-bubble ai-bubble"><div class="content">Layar bersih. Ada apa lagi Der?</div></div>'; }
+    function createNewChat() { chatWindow.innerHTML = '<div class="chat-bubble ai-bubble"><div class="content">Sesi baru dimulai.</div></div>'; toggleSidebar(); }
+    
+    // History Sync
+    function saveSession(user, ai) {
+        const title = user.substring(0, 20) + "...";
+        savedSessions.unshift({ title, user, ai });
+        if(savedSessions.length > 15) savedSessions.pop();
         localStorage.setItem('bgeng_sessions', JSON.stringify(savedSessions));
         renderHistory();
     }
 
     function renderHistory() {
         historyContainer.innerHTML = '';
-        savedSessions.forEach((session, index) => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'history-item-wrapper';
-            wrapper.innerHTML = `
-                <div class="history-item" onclick="loadSession(${index})"><i class="far fa-comment-dots text-blue-400"></i> ${session.title}</div>
-                <div class="delete-history" onclick="deleteSession(event, ${index})"><i class="fas fa-trash-alt"></i></div>`;
-            historyContainer.appendChild(wrapper);
+        savedSessions.forEach((s, i) => {
+            const w = document.createElement('div');
+            w.className = 'history-item-wrapper';
+            w.innerHTML = `<div class="history-item" onclick="loadSession(${i})"><i class="far fa-comment mr-2"></i>${s.title}</div>`;
+            historyContainer.appendChild(w);
         });
     }
 
-    function loadSession(index) {
-        const s = savedSessions[index];
+    function loadSession(i) {
+        const s = savedSessions[i];
         chatWindow.innerHTML = '';
         appendUserBubble(s.user);
         appendAiBubble(s.ai);
         toggleSidebar();
     }
 
-    function deleteSession(e, index) {
-        e.stopPropagation();
-        if(confirm("Hapus sejarah ini?")) {
-            savedSessions.splice(index, 1);
-            localStorage.setItem('bgeng_sessions', JSON.stringify(savedSessions));
-            renderHistory();
-        }
-    }
+    inputField.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
+    renderHistory();
 </script>
 </body>
 </html>
