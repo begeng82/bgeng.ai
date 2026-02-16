@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>BGENG AI | Singularity</title>
+    <title>BGENG CORE | Singularity V1</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -12,194 +12,148 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        /* PALET ELEGAN: Midnight & Stealth */
-        html, body { 
-            background-color: #020203; 
+        body { 
+            background-color: #020305; 
             margin: 0; padding: 0;
-            height: 100%; width: 100%;
+            height: 100vh; width: 100vw;
             overflow: hidden;
-            position: fixed; 
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: #94a3b8;
         }
         
         .app-wrapper {
-            max-width: 750px; /* Dipersempit agar lebih compact */
+            max-width: 750px;
             margin: 0 auto;
             height: 100%;
             display: flex;
             flex-direction: column;
-            background: #08090d; 
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            border-left: 1px solid rgba(255,255,255,0.02);
-            border-right: 1px solid rgba(255,255,255,0.02);
+            background: #05070a;
+            border-left: 1px solid rgba(255,255,255,0.03);
+            border-right: 1px solid rgba(255,255,255,0.03);
         }
 
-        .brand-text {
-            font-weight: 800;
-            color: #ffffff !important;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
+        /* CHAT AREA */
         .chat-container { 
             flex: 1;
             overflow-y: auto; 
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 1.25rem; /* Jarak antar bubble rapi */
-            scroll-behavior: smooth;
+            gap: 1.5rem;
         }
 
-        /* BUBBLE PRECISION: Ngikutin panjang teks */
+        /* PRECISION BUBBLES */
         .chat-bubble {
-            animation: fadeIn 0.3s ease-out;
+            animation: slideUp 0.3s ease-out;
             word-wrap: break-word;
             max-width: 85%;
-            font-size: 0.9rem;
+            font-size: 0.92rem;
             line-height: 1.6;
             padding: 0.8rem 1.1rem;
-            border-radius: 16px;
-            width: fit-content; /* Kotak tidak kebesaran */
-            position: relative;
+            width: fit-content;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* AI BUBBLE: Glassmorphism Muted */
         .ai-bubble { 
             background: rgba(255, 255, 255, 0.03); 
             border: 1px solid rgba(255, 255, 255, 0.06); 
             align-self: flex-start; 
             color: #cbd5e1;
-            border-bottom-left-radius: 4px;
+            border-bottom-left-radius: 2px;
+            text-align: left;
         }
         
-        /* USER BUBBLE: Deep Slate */
         .user-bubble { 
-            background: #1e293b; 
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: #111827; 
+            border: 1px solid rgba(56, 189, 248, 0.1);
             align-self: flex-end; 
             color: #ffffff; 
-            border-bottom-right-radius: 4px;
+            border-bottom-right-radius: 2px;
         }
 
-        /* Markdown Styling: Tersusun Rapi */
-        .ai-bubble p { margin-bottom: 0.75rem; text-align: left; }
+        /* MARKDOWN RENDERING */
+        .ai-bubble p { margin-bottom: 0.8rem; }
         .ai-bubble p:last-child { margin-bottom: 0; }
-        .ai-bubble h1, .ai-bubble h2 { font-weight: 700; color: #ffffff; margin: 1.2rem 0 0.5rem 0; font-size: 1.1rem; }
-        .ai-bubble pre { background: #010204; padding: 1rem; border-radius: 10px; border: 1px solid #1e293b; margin: 1rem 0; overflow-x: auto; width: 100%; }
-        .ai-bubble code { font-family: 'Fira Code', monospace; color: #38bdf8; font-size: 0.85rem; }
-        .ai-bubble ul, .ai-bubble ol { padding-left: 1.2rem; margin-bottom: 0.75rem; }
-        .ai-bubble li { margin-bottom: 0.3rem; }
+        .ai-bubble h1, .ai-bubble h2 { color: #fff; font-weight: 700; margin: 1rem 0 0.5rem 0; font-size: 1.1rem; }
+        .ai-bubble pre { background: #010204; border: 1px solid #1e293b; padding: 1rem; border-radius: 8px; margin: 1rem 0; overflow-x: auto; width: 100%; }
+        .ai-bubble code { color: #38bdf8; font-family: monospace; font-size: 0.85rem; }
+        .ai-bubble ul, .ai-bubble ol { padding-left: 1.5rem; margin-bottom: 0.8rem; }
 
+        /* FOOTER & INPUT */
         footer {
             padding: 1.2rem;
-            background: #08090d;
+            background: #05070a;
             border-top: 1px solid rgba(255, 255, 255, 0.03);
-            padding-bottom: calc(1.2rem + env(safe-area-inset-bottom));
         }
 
         .input-group {
             display: flex;
             align-items: center;
-            background: #11141b;
-            border-radius: 12px;
-            padding: 0.4rem 0.5rem 0.4rem 1.1rem;
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 0.5rem 0.6rem 0.5rem 1.2rem;
             gap: 0.8rem;
             border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.2s ease;
-        }
-
-        .input-group:focus-within {
-            border: 1px solid rgba(56, 189, 248, 0.3);
         }
 
         #user-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: #ffffff;
-            outline: none;
-            font-size: 15px;
+            flex: 1; background: transparent; border: none;
+            color: #ffffff; outline: none; font-size: 15px;
         }
 
-        /* SEND BUTTON: Modern Slate/Sky */
         .send-btn { 
-            background: #38bdf8;
-            color: #020203;
-            width: 2.1rem; height: 2.1rem; 
-            border-radius: 8px; 
-            display: flex; align-items: center; justify-content: center; 
-            transition: all 0.2s;
+            background: #38bdf8; color: #000;
+            width: 2.2rem; height: 2.2rem; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
         }
+        .send-btn:hover { background: #fff; transform: translateY(-1px); }
 
-        .send-btn:hover { background: #ffffff; transform: translateY(-1px); }
-        .send-btn:active { transform: scale(0.95); }
-
-        /* THINKING ANIMATION */
+        /* THINKING INDICATOR */
         .thinking-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.65rem;
-            color: #38bdf8;
-            font-weight: 600;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
+            display: flex; align-items: center; gap: 10px;
+            font-size: 11px; color: #38bdf8; font-weight: 600;
+            letter-spacing: 2px; text-transform: uppercase;
         }
-        .thinking-dot {
-            width: 3px; height: 3px;
-            background: #38bdf8;
-            border-radius: 50%;
-            animation: elegantPulse 1.5s infinite ease-in-out;
-        }
-        @keyframes elegantPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        .bar { width: 2px; height: 12px; background: #38bdf8; animation: pulse 1s infinite ease-in-out; }
+        @keyframes pulse { 0%, 100% { transform: scaleY(0.5); opacity: 0.5; } 50% { transform: scaleY(1.2); opacity: 1; } }
 
-        /* Scrollbar Stealth */
-        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
     </style>
 </head>
 <body>
 
 <div class="app-wrapper">
-    <header class="p-4 flex justify-between items-center bg-black/10 backdrop-blur-md">
+    <header class="p-5 flex justify-between items-center bg-black/10 backdrop-blur-md border-b border-white/5">
         <div class="flex items-center gap-4">
-            <div class="w-8 h-8 rounded-lg overflow-hidden grayscale contrast-125 border border-white/5">
+            <div class="w-9 h-9 rounded-xl overflow-hidden grayscale contrast-125 border border-white/10">
                 <img src="{{ url_for('static', filename='logo.jpg') }}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/40'">
             </div>
             <div>
-                <h1 class="brand-text text-[10px]">BGENG <span class="text-sky-400">CORE</span></h1>
-                <p class="text-[7px] text-gray-500 font-bold uppercase tracking-[0.2em]">Active Singularity</p>
+                <h1 class="text-xs font-bold text-white tracking-widest uppercase">BGENG <span class="text-sky-400">CORE</span></h1>
+                <p class="text-[7px] text-gray-500 font-bold uppercase tracking-[0.3em]">Singularity v1.0</p>
             </div>
         </div>
-        <button onclick="clearChat()" class="text-gray-700 hover:text-white transition-colors"><i class="fas fa-terminal text-xs"></i></button>
+        <button onclick="clearChat()" class="text-gray-700 hover:text-white"><i class="fas fa-terminal text-xs"></i></button>
     </header>
 
     <main id="chat-window" class="chat-container">
         <div class="chat-bubble ai-bubble">
-            <p>Sistem terinisialisasi. <br><span id="welcome-msg" class="text-gray-500 italic">Siap menerima instruksi teknis.</span></p>
+            <p>System Online. <br><span id="welcome-msg" class="text-gray-500 italic">Awaiting connection parameters...</span></p>
         </div>
     </main>
 
     <footer>
         <div class="input-group">
-            <label class="text-gray-600 cursor-pointer hover:text-sky-400 transition-colors">
-                <i class="far fa-plus-square text-lg"></i>
-                <input type="file" hidden accept="image/*">
-            </label>
-            <input id="user-input" type="text" autocomplete="off" placeholder="Type a message...">
+            <input id="user-input" type="text" autocomplete="off" placeholder="Enter command or question...">
             <button onclick="sendMsg()" class="send-btn">
-                <i class="fas fa-arrow-up text-xs"></i>
+                <i class="fas fa-chevron-up text-xs"></i>
             </button>
         </div>
     </footer>
@@ -209,44 +163,61 @@
     const chatWindow = document.getElementById('chat-window');
     const inputField = document.getElementById('user-input');
 
-    // LOGIKA MEMORI (PERTAMA KALI)
+    // INITIALIZATION
     let userName = localStorage.getItem('bgeng_user') || "";
     if (!userName) {
         setTimeout(() => {
-            userName = prompt("Identitas Anda?", "User");
+            userName = prompt("Identify yourself, User:", "Guest");
             if(userName) {
                 localStorage.setItem('bgeng_user', userName);
-                document.getElementById('welcome-msg').innerText = `Koneksi aman. Selamat datang, ${userName}.`;
+                document.getElementById('welcome-msg').innerText = `Greetings, ${userName}. Protocol ready.`;
             }
-        }, 1000);
+        }, 800);
     } else {
-        document.getElementById('welcome-msg').innerText = `Koneksi aman. Selamat datang kembali, ${userName}.`;
+        document.getElementById('welcome-msg').innerText = `Welcome back, ${userName}. Protocol ready.`;
     }
 
     inputField.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
 
+    // CORE DATA TRANSFER
     async function sendMsg() {
         const msg = inputField.value.trim();
         if(!msg) return;
 
+        // 1. Tampilkan pesan user di UI
         appendBubble(msg, 'user');
         inputField.value = '';
+
+        // 2. Kumpulkan memory (history) singkat dari DOM
+        const history = Array.from(document.querySelectorAll('.chat-bubble'))
+            .slice(-4)
+            .map(b => b.innerText)
+            .join(" | ");
+
+        // 3. Tampilkan Loading
         const tid = showThinking();
 
-        const history = Array.from(document.querySelectorAll('.chat-bubble')).slice(-4).map(b => b.innerText).join(" | ");
-
         try {
+            // 4. KIRIM DATA KE PYTHON
             const res = await fetch('/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: msg, user_name: userName || "User", history: history })
+                body: JSON.stringify({ 
+                    message: msg, 
+                    user_name: userName || "User", 
+                    history: history 
+                })
             });
+
             const data = await res.json();
+            
+            // 5. TERIMA DATA DARI PYTHON
             document.getElementById(tid).remove();
             typeWriter(data.reply);
+            
         } catch (e) {
             document.getElementById(tid).remove();
-            appendBubble("Komunikasi terputus. Cek koneksi Anda.", 'ai');
+            appendBubble("Communication failure. Core disconnected.", 'ai');
         }
     }
 
@@ -255,21 +226,16 @@
         d.className = `chat-bubble ${role}-bubble`;
         d.innerText = text;
         chatWindow.appendChild(d);
-        chatWindow.scrollTo({top: chatWindow.scrollHeight, behavior: 'smooth'});
+        scrollToBottom();
     }
 
     function showThinking() {
         const id = 't-' + Date.now();
         const d = document.createElement('div');
         d.id = id; d.className = 'ai-bubble chat-bubble';
-        d.innerHTML = `
-            <div class="thinking-wrapper">
-                <div class="thinking-dot"></div>
-                <span>Processing</span>
-                <div class="thinking-dot"></div>
-            </div>`;
+        d.innerHTML = `<div class="thinking-wrapper"><div class="bar"></div><span>Analyzing</span></div>`;
         chatWindow.appendChild(d);
-        chatWindow.scrollTo({top: chatWindow.scrollHeight, behavior: 'smooth'});
+        scrollToBottom();
         return id;
     }
 
@@ -277,23 +243,30 @@
         const bubble = document.createElement('div');
         bubble.className = 'chat-bubble ai-bubble';
         chatWindow.appendChild(bubble);
+        
         let i = 0, current = "";
         function type() {
             if (i < text.length) {
                 current += text.charAt(i);
+                // Render Markdown secara real-time
                 bubble.innerHTML = marked.parse(current);
+                // Highlight code jika ada
                 bubble.querySelectorAll('pre code').forEach((b) => hljs.highlightElement(b));
                 i++;
-                chatWindow.scrollTo(0, chatWindow.scrollHeight);
-                setTimeout(type, 3);
+                scrollToBottom();
+                setTimeout(type, 5); // Kecepatan ketik
             }
         }
         type();
     }
 
+    function scrollToBottom() {
+        chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
+    }
+
     function clearChat() { 
-        if(confirm("Hapus log sesi ini?")) { 
-            chatWindow.innerHTML = '<div class="chat-bubble ai-bubble">Buffer bersih. Standby.</div>'; 
+        if(confirm("Wipe logs?")) { 
+            chatWindow.innerHTML = '<div class="chat-bubble ai-bubble">Cache cleared. Standby.</div>'; 
         } 
     }
 </script>
