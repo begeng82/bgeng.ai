@@ -76,7 +76,7 @@
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div id="sidebar">
     <div class="flex justify-between items-center mb-6">
-        <h2 class="font-bold text-white text-lg">Chat History<br>Hapus kalo ga berguna</h2>
+        <h2 class="font-bold text-white text-lg">Chat History<br><span class="text-xs font-normal text-gray-500">Hapus kalo ga berguna</span></h2>
         <button onclick="toggleSidebar()" class="text-gray-500"><i class="fas fa-times"></i></button>
     </div>
     <button onclick="createNewChat()" class="w-full py-3 px-4 rounded-xl border border-dashed border-gray-700 text-gray-400 text-sm mb-4 text-left hover:bg-gray-800">
@@ -121,8 +121,17 @@
     const inputField = document.getElementById('user-input');
     const historyContainer = document.getElementById('history-container');
     
-    // Load sessions dari storage
     let savedSessions = JSON.parse(localStorage.getItem('bgeng_sessions')) || [];
+    let userName = localStorage.getItem('bgeng_user_name') || "";
+
+    // Minta nama kalau belum ada
+    if (!userName) {
+        setTimeout(() => {
+            let n = prompt("Biar akrab, panggil lu siapa Der?", "User");
+            if(n) { userName = n; localStorage.setItem('bgeng_user_name', n); }
+            else { userName = "Guys"; }
+        }, 1000);
+    }
 
     function renderHistory() {
         historyContainer.innerHTML = '';
@@ -141,19 +150,17 @@
         });
     }
 
-    // Hapus SEMUA history (Layar + Sidebar + LocalStorage)
     function clearAllHistory() {
         if(confirm("Hapus semua riwayat percakapan secara permanen?")) {
-            savedSessions = []; // Kosongkan array
-            localStorage.removeItem('bgeng_sessions'); // Hapus storage
-            renderHistory(); // Update sidebar
+            savedSessions = [];
+            localStorage.removeItem('bgeng_sessions');
+            renderHistory();
             chatWindow.innerHTML = '<div class="chat-bubble ai-bubble"><div class="content">Semua chat telah dihapus. Sesi baru dimulai.</div></div>';
         }
     }
 
-    // Hapus satu per satu item di sidebar
     function deleteSingleHistory(event, index) {
-        event.stopPropagation(); // Biar gak trigger loadSession
+        event.stopPropagation();
         savedSessions.splice(index, 1);
         localStorage.setItem('bgeng_sessions', JSON.stringify(savedSessions));
         renderHistory();
@@ -163,6 +170,12 @@
         const msg = inputField.value.trim();
         if(!msg) return;
 
+        // Ambil konteks chat terakhir buat dikirim ke Python (history)
+        const recentHistory = Array.from(document.querySelectorAll('.content'))
+            .slice(-4)
+            .map(c => c.innerText)
+            .join(" | ");
+
         appendUserBubble(msg);
         inputField.value = '';
         const tid = showThinking();
@@ -171,7 +184,11 @@
             const res = await fetch('/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: msg })
+                body: JSON.stringify({ 
+                    message: msg,
+                    user_name: userName || "Guys",
+                    history: recentHistory 
+                })
             });
             
             const data = await res.json();
@@ -260,9 +277,7 @@
 
     inputField.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
     
-    // Inisialisasi awal
     renderHistory();
 </script>
 </body>
 </html>
-
