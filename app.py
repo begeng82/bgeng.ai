@@ -72,10 +72,11 @@ def chat():
         )
         return jsonify({"reply": completion.choices[0].message.content})
     except Exception as e:
-        return jsonify({"reply": "Waduh Der, otak gue lagi distorsi timeline. Coba lagi!"})
+        return jsonify({"reply": "Waduh Der, otak gue lagi maintenance. Entar Coba lagi!"})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+
 
 
 
