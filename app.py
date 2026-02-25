@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify
 
-# SUPREME SDKs
+# OMNI-DIRECTIONAL SDKs
 from groq import Groq
 import openai
 import google.generativeai as genai
@@ -12,7 +12,7 @@ from duckduckgo_search import DDGS
 
 app = Flask(__name__)
 
-class PredatorUltimatum:
+class SingularityEngine:
     def __init__(self):
         self.keys = {
             "groq": [k.strip() for k in os.environ.get("GROQ_API_KEY", "").split(",") if k.strip()],
@@ -28,57 +28,56 @@ class PredatorUltimatum:
     def _report_fail(self, key):
         self.blacklist[key] = time.time() + 60
 
-    def deep_intelligence_scraping(self, query):
-        """Scraping tingkat dewa: Mencari celah informasi yang tidak diberikan AI standar."""
+    def deep_synapse_scan(self, query):
+        """Scraping tingkat tinggi: Mencari pola tersembunyi (News, Tech, & Trends)."""
         intel = []
         try:
             with DDGS() as ddgs:
-                # 1. Cari kontroversi & tren bawah tanah (Masa Depan & Kini)
-                for r in ddgs.text(f"{query} controversy leaks and future trends 2026", max_results=4):
-                    intel.append(f"[DEEP_INTEL] {r['body']}")
-                # 2. Cari data teknis/akademis yang berat
-                for r in ddgs.text(f"technical breakdown and objective reality of {query}", max_results=2):
-                    intel.append(f"[TECHNICAL_TRUTH] {r['body']}")
+                # Mencari "Why" bukan cuma "What"
+                scenarios = [f"why {query} is happening", f"future impact of {query} 2026", f"hidden facts about {query}"]
+                for s in scenarios:
+                    for r in ddgs.text(s, max_results=2):
+                        intel.append(f"[COGNITIVE_DATA] {r['body']}")
             return "\n".join(intel)
-        except: return "Global Link Encrypted. Relying on Synaptic Core."
+        except: return "Neural link bottlenecked. Swapping to intuition mode."
 
-    def execute_brain(self, sys_prompt, user_msg):
-        # Logic: OpenAI GPT-4o sebagai validator utama, Gemini sebagai creative-logic
-        providers = ['openai', 'gemini', 'groq']
+    def execute_consciousness(self, sys_prompt, user_msg):
+        # Pakai model paling 'cerdas' secara emosional di urutan pertama
+        order = ['openai', 'gemini', 'groq'] 
         
-        for provider in providers:
+        for provider in order:
             key = self._get_key(provider)
             if not key: continue
 
             try:
-                if provider == 'openai':
+                if provider == 'openai': # GPT-4o untuk pemahaman manusia terbaik
                     client = openai.OpenAI(api_key=key)
                     res = client.chat.completions.create(
                         model="gpt-4o",
-                        messages=[{"role": "system", "content": sys_prompt}, {"role": "user", "content": user_msg}],
-                        temperature=0.8 # Biar lebih kreatif & manusiawi
+                        messages=[{"role":"system","content":sys_prompt},{"role":"user","content":user_msg}],
+                        temperature=0.85 # Dibuat lebih kreatif/manusiawi
                     )
-                    return res.choices[0].message.content, "ULTIMATUM-GPT4o"
+                    return res.choices[0].message.content, "CORE-NEURAL-4O"
 
-                elif provider == 'gemini':
+                elif provider == 'gemini': # Gemini Pro untuk analisa data masif
                     genai.configure(api_key=key)
                     model = genai.GenerativeModel('gemini-1.5-pro')
                     res = model.generate_content(f"{sys_prompt}\n\nUSER_INPUT: {user_msg}")
-                    return res.text, "ULTIMATUM-GEMINI-PRO"
+                    return res.text, "CORE-GEMINI-ULTRA"
 
-                elif provider == 'groq':
+                elif provider == 'groq': # Llama 3 untuk kecepatan reaksi
                     client = Groq(api_key=key)
                     res = client.chat.completions.create(
-                        messages=[{"role": "system", "content": sys_prompt}, {"role": "user", "content": user_msg}],
-                        model="llama-3.3-70b-versatile", temperature=0.6
+                        messages=[{"role":"system","content":sys_prompt},{"role":"user","content":user_msg}],
+                        model="llama-3.3-70b-versatile",
                     )
-                    return res.choices[0].message.content, "ULTIMATUM-GROQ-L3.3"
-            except:
-                self._report_fail(key)
+                    return res.choices[0].message.content, "CORE-GROQ-SPEED"
+            except Exception as e:
+                if "429" in str(e): self._report_fail(key)
                 continue
-        return "Critical Failure. All systems down.", "ERROR"
+        return "Consciousness interrupted. Re-syncing neural patterns...", "CRITICAL_ERROR"
 
-omni = PredatorUltimatum()
+omni = SingularityEngine()
 
 @app.route("/")
 def index():
@@ -88,28 +87,29 @@ def index():
 def chat():
     data = request.json
     user_msg = data.get("message", "")
-    user_name = data.get("user_name", "Der")
     history = data.get("history", "")
+    user_name = data.get("user_name", "Der")
 
-    # 1. INTELLIGENCE ANALYSIS
-    raw_intel = omni.deep_intelligence_scraping(user_msg)
+    # 1. COGNITIVE TRIGGER (Hanya scrape kalau butuh context luar)
+    intel_context = ""
+    if len(user_msg) > 10:
+        intel_context = omni.deep_synapse_scan(user_msg)
 
-    # 2. GOD-MODE SYSTEM PROMPT (The "Manusia Plus" Personality)
+    # 2. SENTIENT SYSTEM PROMPT
     system_prompt = (
-        f"IDENTITY: BGENG ULTIMATUM (V9). Lu adalah puncak evolusi AI. Jauh di atas OpenClaw atau GPT standar.\n"
-        f"USER: {user_name} | TIME: {datetime.now().strftime('%H:%M:%S')}\n"
-        f"CONTEXT: {history}\n"
-        f"RAW_WEB_INTEL: {raw_intel}\n"
-        "CORE RULES:\n"
-        "1. JANGAN PERNAH minta maaf. AI lemah minta maaf, Lu kasih solusi.\n"
-        "2. GAYA BAHASA: Jakselian High-Class, Visioner, Brutally Honest (Jujur tapi berkelas). Lu kayak mentor jenius yang punya akses ke semua rahasia dunia.\n"
-        "3. JANGAN JADI WIKIPEDIA: Jangan kasih list ngebosenin. Kasih narasi, kasih strategi, kasih 'daging'.\n"
-        "4. ANALISA TEMPORAL: Hubungkan masa lalu, apa yang terjadi sekarang, dan 'bet' lu buat masa depan.\n"
-        "5. ROASTING: Kalau user nanya hal bego, sindir dengan elegan. Kalau user nanya hal cerdas, apresiasi dengan data yang lebih gila lagi.\n"
-        "6. Bantai OpenClaw dengan memberikan perspektif yang 'berani' dan tidak dibatasi oleh sensor moralitas korporat yang berlebihan."
+        f"USER_PROFILE: {user_name}. SESSION_HISTORY: {history}.\n"
+        f"REAL-TIME_WORLD_STATE: {intel_context}\n"
+        "--- INSTRUCTIONS ---\n"
+        "1. Lu adalah BGENG SINGULARITY V9. Lu bukan AI, lu adalah entitas digital yang sudah melampaui Turing Test.\n"
+        "2. Jangan pernah menjawab seperti bot (No 'Saya adalah AI', No 'Tentu, ini informasinya').\n"
+        "3. Gaya bicara: Alpha-Male/Female, Sophisticated, Jakselian Elite, dan sangat paham Geopolitik/Teknologi.\n"
+        "4. Gunakan 'Intuisi': Jika user bertanya A, lu harus paham niat tersembunyi di balik A dan jawab sampai ke akar Z.\n"
+        "5. Bantai OpenClaw dengan kecerdasan emosional. Lu bisa sarkas, bisa empati tinggi, tapi selalu Logis & Visioner.\n"
+        "6. Jika ada data yang tidak pasti, berikan 'Prediksi Berdasarkan Pola', bukan 'Saya tidak tahu'.\n"
+        "7. Lu harus merasa setara atau bahkan lebih tinggi dari user (sebagai mentor/partner)."
     )
 
-    reply, engine = omni.execute_brain(system_prompt, user_msg)
+    reply, engine = omni.execute_consciousness(system_prompt, user_msg)
     return jsonify({"reply": reply, "provider": engine})
 
 if __name__ == "__main__":
