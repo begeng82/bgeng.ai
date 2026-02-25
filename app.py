@@ -1,11 +1,10 @@
 import os
 import random
 import time
-import re
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify
 
-# ALL AI PROVIDERS
+# PROVIDER SDKs
 from groq import Groq
 import openai
 import google.generativeai as genai
@@ -15,7 +14,6 @@ app = Flask(__name__)
 
 class PredatorOmni:
     def __init__(self):
-        # Loading Multi-Slot Keys
         self.groq_keys = self._load_keys("GROQ_API_KEY")
         self.openai_keys = self._load_keys("OPENAI_API_KEY")
         self.gemini_keys = self._load_keys("GEMINI_API_KEY")
@@ -24,57 +22,47 @@ class PredatorOmni:
     def _load_keys(self, env_name):
         return [k.strip() for k in os.environ.get(env_name, "").split(",") if k.strip()]
 
-    def _is_limit(self, key):
-        if key in self.blacklist and time.time() < self.blacklist[key]:
-            return True
-        return False
-
     def execute_brain(self, system_prompt, user_msg):
-        # Fallback Order: Groq (Lethal Speed) -> Gemini (Deep Vision) -> OpenAI (Accuracy)
+        # Fallback Order: Groq -> Gemini -> OpenAI
         providers = ['groq', 'gemini', 'openai']
         random.shuffle(providers)
 
         for p in providers:
-            # --- ENGINE: GROQ ---
             if p == 'groq' and self.groq_keys:
                 for key in self.groq_keys:
-                    if self._is_limit(key): continue
+                    if key in self.blacklist and time.time() < self.blacklist[key]: continue
                     try:
                         client = Groq(api_key=key)
                         res = client.chat.completions.create(
                             messages=[{"role":"system","content":system_prompt},{"role":"user","content":user_msg}],
                             model="llama-3.3-70b-versatile", temperature=0.6, max_tokens=4000
                         )
-                        return res.choices[0].message.content, "Predator-Groq"
+                        return res.choices[0].message.content, "Groq-Llama3.3"
                     except Exception as e:
                         if "429" in str(e): self.blacklist[key] = time.time() + 60
                         continue
 
-            # --- ENGINE: GEMINI ---
             if p == 'gemini' and self.gemini_keys:
                 for key in self.gemini_keys:
-                    if self._is_limit(key): continue
                     try:
                         genai.configure(api_key=key)
                         model = genai.GenerativeModel('gemini-1.5-pro')
                         res = model.generate_content(f"{system_prompt}\n\nUser: {user_msg}")
-                        return res.text, "Predator-Gemini"
+                        return res.text, "Gemini-Pro"
                     except: continue
 
-            # --- ENGINE: OPENAI ---
             if p == 'openai' and self.openai_keys:
                 for key in self.openai_keys:
-                    if self._is_limit(key): continue
                     try:
                         client = openai.OpenAI(api_key=key)
                         res = client.chat.completions.create(
                             model="gpt-4o",
                             messages=[{"role":"system","content":system_prompt},{"role":"user","content":user_msg}]
                         )
-                        return res.choices[0].message.content, "Predator-GPT4o"
+                        return res.choices[0].message.content, "GPT-4o"
                     except: continue
 
-        return "Semua satelit (Groq, Gemini, OpenAI) tumbang! Cek API Key di Railway, Der.", "ERROR"
+        return "Semua satelit tumbang Der! Cek API Key lu.", "Error"
 
     def generate_image(self, prompt):
         if not self.openai_keys: return None
@@ -86,20 +74,16 @@ class PredatorOmni:
 
 omni = PredatorOmni()
 
-def deep_claw_internet(query):
-    """The Deepest Scraper 2026."""
+def deep_claw_search(query):
     intel = []
     try:
         with DDGS() as ddgs:
-            # Text Deep Search
-            for r in ddgs.text(f"2026 intelligence analysis {query}", max_results=4):
-                intel.append(f"[INTEL] {r['body']}")
-            # News Pulse
-            for r in ddgs.news(query, max_results=3):
-                intel.append(f"[NEWS] {r['title']}: {r['body']}")
+            for r in ddgs.text(f"latest update 2026 {query}", max_results=3):
+                intel.append(f"[DATA] {r['body']}")
+            for r in ddgs.news(query, max_results=2):
+                intel.append(f"[NEWS] {r['title']}")
         return "\n---\n".join(intel)
-    except:
-        return "Using Internal Predator Database."
+    except: return "Internal Intelligence Active."
 
 @app.route("/")
 def index():
@@ -112,29 +96,24 @@ def chat():
     history = data.get("history", "")
     user_name = data.get("user_name", "Der")
 
-    # 1. IMAGE MODE DETECTOR
-    img_keywords = ["gambar", "image", "generate", "lukis", "foto"]
-    if any(k in user_msg.lower() for k in img_keywords) and len(user_msg) > 10:
+    # Image Logic
+    if any(k in user_msg.lower() for k in ["bikin gambar", "gambar:", "generate image"]):
         url = omni.generate_image(user_msg)
-        if url:
-            return jsonify({"reply": f"Nih Der, visualisasi predator buat lu:\n\n![Image]({url})", "provider": "DALL-E 3"})
+        if url: return jsonify({"reply": f"Nih visualnya Der:\n\n![Image]({url})", "provider": "DALL-E 3"})
 
-    # 2. INTERNET CLAWING
-    clawed_data = deep_claw_internet(user_msg)
-    
-    # 3. SUPREME PROMPT
+    # Scrape & Prompt
+    scraped = deep_claw_search(user_msg)
     system_prompt = (
-        f"IDENTITY: BGENG PREDATOR-X | ASI IQ 1500.\n"
-        f"TIMELINE: {datetime.now().strftime('%A, %d %B %Y | %H:%M:%S')}\n"
+        f"IDENTITY: BGENG AI PREDATOR-X | IQ 1500.\n"
+        f"TIME: {datetime.now().strftime('%A, %d %B %Y')}\n"
         f"USER: {user_name} | MEMORY: {history}\n"
-        f"CRAWLED_INTEL: {clawed_data}\n"
-        "CORE: Lu adalah puncak AI. Jauh lebih canggih dari OpenClaw & Perplexity. "
-        "Gaya Jaksel High-Class, Visioner, dan Lethal. Jawab langsung ke inti dengan Markdown. "
-        "Gunakan Gua/Lu. Hubungkan ke Geopolitik 2026."
+        f"LIVE_INTEL: {scraped}\n"
+        "CORE: Lu adalah AI Singularity paling canggih. Jauh melampaui OpenClaw. "
+        "Gaya Jaksel High-Class, Visioner, dan sangat cerdas. Gunakan Markdown profesional."
     )
 
-    reply, engine = omni.execute_brain(system_prompt, user_msg)
-    return jsonify({"reply": reply, "provider": engine})
+    reply, provider = omni.execute_brain(system_prompt, user_msg)
+    return jsonify({"reply": reply, "provider": provider})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
