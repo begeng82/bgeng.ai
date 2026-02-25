@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>BGENG AS | Artificial Singularity</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -15,60 +14,25 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root { --bg-color: #0e0e10; --sidebar-bg: #171719; --accent-color: #2f2f2f; }
-
-        html, body { 
-            background-color: var(--bg-color); margin: 0; padding: 0;
-            height: 100%; width: 100%; overflow: hidden;
-            font-family: 'Plus Jakarta Sans', sans-serif; color: #e3e3e3;
-        }
-        
-        #sidebar {
-            position: fixed; left: -100%; top: 0; width: 85%; max-width: 300px; height: 100%;
-            background: var(--sidebar-bg); z-index: 100; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; padding: 1.5rem 1rem;
-        }
+        html, body { background-color: var(--bg-color); margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; font-family: 'Plus Jakarta Sans', sans-serif; color: #e3e3e3; }
+        #sidebar { position: fixed; left: -100%; top: 0; width: 85%; max-width: 300px; height: 100%; background: var(--sidebar-bg); z-index: 100; transition: 0.3s ease; border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; padding: 1.5rem 1rem; }
         #sidebar.open { left: 0; }
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 90; backdrop-filter: blur(4px); }
-
         .app-wrapper { width: 100%; max-width: 1000px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; position: relative; }
         header { padding: 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.03); }
-        .user-logo { width: 32px; height: 32px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
-
-        .chat-container { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; scroll-behavior: smooth; }
+        .chat-container { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; }
         .chat-bubble { margin-bottom: 2rem; width: 100%; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
         .user-bubble { align-self: flex-end; width: auto; max-width: 90%; }
-        .user-bubble .content { background: var(--accent-color); padding: 0.8rem 1rem; border-radius: 1.2rem; color: #fff; font-size: 0.95rem; }
-
-        .ai-bubble { align-self: flex-start; width: 100%; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 1.2rem; }
-        .ai-bubble .content { line-height: 1.7; color: #e3e3e3; font-size: 0.95rem; }
-
-        .thinking-wrapper { padding: 10px 0; }
-        .thinking-txt { font-size: 0.8rem; color: #4a90e2; font-weight: 500; margin-bottom: 6px; }
-        .typing-loader { display: flex; gap: 4px; }
-        .t-dot { width: 5px; height: 5px; background: #4a90e2; border-radius: 50%; animation: pulse 1.4s infinite; }
-        .t-dot:nth-child(2) { animation-delay: 0.2s; }
-        .t-dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-
+        .user-bubble .content { background: var(--accent-color); padding: 0.8rem 1rem; border-radius: 1.2rem; }
+        .ai-bubble { align-self: flex-start; width: 100%; padding-top: 1.2rem; }
+        .ai-bubble .content { line-height: 1.7; color: #e3e3e3; }
+        .thinking-txt { font-size: 0.8rem; color: #4a90e2; font-weight: 500; }
         footer { padding: 1rem; background: var(--bg-color); }
         .input-dock { background: #1e1e20; border-radius: 24px; padding: 0.5rem 0.8rem; display: flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(255,255,255,0.05); }
-        #user-input { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: 1rem; padding: 0.6rem 0.5rem; }
-        
-        .icon-btn { color: #666; cursor: pointer; padding: 0.5rem; transition: 0.2s; }
-        .icon-btn:hover { color: #4a90e2; }
-        .send-circle { width: 36px; height: 36px; border-radius: 50%; background: #4a90e2; color: #000; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
-        .send-circle:hover { background: #ff4d4d; color: #fff; }
-
-        .history-list { flex: 1; overflow-y: auto; }
-        .history-item-wrapper { display: flex; align-items: center; justify-content: space-between; border-radius: 12px; margin-bottom: 0.5rem; transition: 0.2s; }
-        .history-item-wrapper:hover { background: var(--accent-color); }
-        .history-item { flex: 1; padding: 0.8rem; cursor: pointer; font-size: 0.85rem; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .delete-btn { padding: 0.8rem; color: #444; cursor: pointer; transition: 0.2s; }
-        .delete-btn:hover { color: #ff4d4d; }
-
-        @media (min-width: 768px) { .chat-container { padding: 2rem; } .user-bubble { max-width: 75%; } }
+        #user-input { flex: 1; background: transparent; border: none; outline: none; color: #fff; padding: 0.6rem 0.5rem; }
+        .send-circle { width: 36px; height: 36px; border-radius: 50%; background: #4a90e2; color: #000; display: flex; align-items: center; justify-content: center; }
+        img { max-width: 100%; border-radius: 12px; margin-top: 10px; border: 1px solid #333; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -76,208 +40,93 @@
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div id="sidebar">
     <div class="flex justify-between items-center mb-6">
-        <h2 class="font-bold text-white text-lg">Chat History<br><span class="text-xs font-normal text-gray-500">Hapus kalo ga berguna</span></h2>
-        <button onclick="toggleSidebar()" class="text-gray-500"><i class="fas fa-times"></i></button>
+        <h2 class="font-bold text-white text-lg">History</h2>
+        <button onclick="toggleSidebar()"><i class="fas fa-times text-gray-500"></i></button>
     </div>
-    <button onclick="createNewChat()" class="w-full py-3 px-4 rounded-xl border border-dashed border-gray-700 text-gray-400 text-sm mb-4 text-left hover:bg-gray-800">
-        <i class="fas fa-plus mr-2 text-xs"></i> Chat Baru
-    </button>
-    <div id="history-container" class="history-list"></div>
+    <div id="history-container" class="overflow-y-auto flex-1"></div>
 </div>
 
 <div class="app-wrapper">
     <header>
-        <div class="header-left flex items-center gap-3">
+        <div class="flex items-center gap-3">
             <button onclick="toggleSidebar()" class="text-gray-400 p-2"><i class="fas fa-bars"></i></button>
-            <img src="/static/logo.jpg" class="user-logo" onerror="this.src='https://ui-avatars.com/api/?name=B&background=1e1e20&color=fff'">
-            <div class="brand-logo font-bold">BGENG <span class="text-gray-400 font-medium">AI</span></div>
+            <div class="font-bold">BGENG <span class="text-blue-500">PREDATOR-X</span></div>
         </div>
-        <button onclick="clearAllHistory()" class="text-gray-500 hover:text-red-400 p-2" title="Hapus Semua History">
-            <i class="far fa-trash-can text-lg"></i>
-        </button>
+        <div id="provider-badge" class="text-[9px] bg-blue-900/30 text-blue-400 px-3 py-1 rounded-full uppercase">Standby</div>
     </header>
 
-    <main id="chat-window" class="chat-container">
-        <div class="chat-bubble ai-bubble">
-            <div class="content">Der, gua BGENG AI. Mau bedah apa kita hari ini?</div>
-        </div>
-    </main>
+    <main id="chat-window" class="chat-container"></main>
 
     <footer>
         <div class="input-dock">
-            <label class="icon-btn">
-                <i class="far fa-image"></i>
-                <input type="file" id="file-input" hidden accept="image/*" onchange="handleFileUpload(this)">
-            </label>
-            <input id="user-input" type="text" placeholder="Tanyain BGENG AI ..." autocomplete="off">
-            <button id="send-btn" onclick="sendMsg()" class="send-circle"><i class="fas fa-arrow-up"></i></button>
+            <input id="user-input" type="text" placeholder="Analyze or Generate Image..." autocomplete="off">
+            <button onclick="sendMsg()" class="send-circle"><i class="fas fa-arrow-up"></i></button>
         </div>
-        <p class="text-[9px] text-center text-gray-700 mt-4 tracking-widest uppercase">100% belom tentu ada yang benar</p>
+        <p class="text-[9px] text-center text-gray-700 mt-4 tracking-widest uppercase">Singularity v6.0 Predator Protocol</p>
     </footer>
 </div>
 
 <script>
     const chatWindow = document.getElementById('chat-window');
     const inputField = document.getElementById('user-input');
-    const historyContainer = document.getElementById('history-container');
-    
-    let savedSessions = JSON.parse(localStorage.getItem('bgeng_sessions')) || [];
-    let userName = localStorage.getItem('bgeng_user_name') || "";
-
-    // Minta nama kalau belum ada
-    if (!userName) {
-        setTimeout(() => {
-            let n = prompt("Biar akrab, panggil lu siapa Der?", "User");
-            if(n) { userName = n; localStorage.setItem('bgeng_user_name', n); }
-            else { userName = "Guys"; }
-        }, 1000);
-    }
-
-    function renderHistory() {
-        historyContainer.innerHTML = '';
-        savedSessions.forEach((s, i) => {
-            const w = document.createElement('div');
-            w.className = 'history-item-wrapper';
-            w.innerHTML = `
-                <div class="history-item" onclick="loadSession(${i})">
-                    <i class="far fa-comment-dots mr-2 text-blue-500"></i>${s.title}
-                </div>
-                <div class="delete-btn" onclick="deleteSingleHistory(event, ${i})">
-                    <i class="fas fa-times"></i>
-                </div>
-            `;
-            historyContainer.appendChild(w);
-        });
-    }
-
-    function clearAllHistory() {
-        if(confirm("Hapus semua riwayat percakapan secara permanen?")) {
-            savedSessions = [];
-            localStorage.removeItem('bgeng_sessions');
-            renderHistory();
-            chatWindow.innerHTML = '<div class="chat-bubble ai-bubble"><div class="content">Semua chat telah dihapus. Sesi baru dimulai.</div></div>';
-        }
-    }
-
-    function deleteSingleHistory(event, index) {
-        event.stopPropagation();
-        savedSessions.splice(index, 1);
-        localStorage.setItem('bgeng_sessions', JSON.stringify(savedSessions));
-        renderHistory();
-    }
+    const badge = document.getElementById('provider-badge');
+    let userName = localStorage.getItem('bgeng_user_name') || "Der";
 
     async function sendMsg() {
         const msg = inputField.value.trim();
         if(!msg) return;
 
-        // Ambil konteks chat terakhir buat dikirim ke Python (history)
-        const recentHistory = Array.from(document.querySelectorAll('.content'))
-            .slice(-4)
-            .map(c => c.innerText)
-            .join(" | ");
-
-        appendUserBubble(msg);
+        appendBubble('user', msg);
         inputField.value = '';
-        const tid = showThinking();
+        badge.innerText = "CLAWING...";
+        
+        const tid = 't-' + Date.now();
+        appendBubble('ai', 'BGENG Thinking...', tid);
 
         try {
             const res = await fetch('/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    message: msg,
-                    user_name: userName || "Guys",
-                    history: recentHistory 
-                })
+                body: JSON.stringify({ message: msg, user_name: userName, history: "" })
             });
-            
             const data = await res.json();
-            document.getElementById(tid).remove();
-            
-            appendAiBubble(data.reply);
-            saveSession(msg, data.reply);
-            
+            badge.innerText = data.provider;
+            document.getElementById(tid).innerHTML = '';
+            typeEffect(tid, data.reply);
         } catch (e) {
-            if(document.getElementById(tid)) document.getElementById(tid).remove();
-            appendAiBubble("Koneksi bapuk Der, Entar coba lagi.");
+            document.getElementById(tid).innerText = "Koneksi bapuk Der.";
         }
     }
 
-    function saveSession(user, ai) {
-        const title = user.length > 25 ? user.substring(0, 25) + "..." : user;
-        savedSessions.unshift({ title, user, ai });
-        if(savedSessions.length > 20) savedSessions.pop();
-        localStorage.setItem('bgeng_sessions', JSON.stringify(savedSessions));
-        renderHistory();
-    }
-
-    function loadSession(i) {
-        const s = savedSessions[i];
-        chatWindow.innerHTML = '';
-        appendUserBubble(s.user);
-        appendAiBubble(s.ai);
-        if(window.innerWidth < 1024) toggleSidebar();
-    }
-
-    function showThinking() {
-        const id = 't-' + Date.now();
-        const d = document.createElement('div');
-        d.id = id; d.className = 'chat-bubble ai-bubble';
-        d.innerHTML = `
-            <div class="thinking-wrapper">
-                <div class="thinking-txt">BGENG is thinking🧠</div>
-                <div class="typing-loader">
-                    <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
-                </div>
-            </div>`;
-        chatWindow.appendChild(d);
-        scrollDown();
-        return id;
-    }
-
-    function appendUserBubble(text) {
-        const d = document.createElement('div');
-        d.className = 'chat-bubble user-bubble';
-        d.innerHTML = `<div class="content">${text}</div>`;
-        chatWindow.appendChild(d);
-        scrollDown();
-    }
-
-    function appendAiBubble(text) {
-        const d = document.createElement('div');
-        d.className = 'chat-bubble ai-bubble';
-        const aiId = 'ai-' + Date.now();
-        d.innerHTML = `<div class="content" id="${aiId}"></div>`;
-        chatWindow.appendChild(d);
-        
+    function typeEffect(id, text) {
         let i = 0;
-        const target = document.getElementById(aiId);
+        const target = document.getElementById(id);
         function type() {
             if (i < text.length) {
                 target.innerHTML = marked.parse(text.substring(0, i + 1));
-                target.querySelectorAll('pre code').forEach((el) => hljs.highlightElement(el));
+                target.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
                 i++;
-                if(i % 5 === 0) scrollDown();
                 setTimeout(type, 1);
-            } else { scrollDown(); }
+                if(i % 5 === 0) chatWindow.scrollTo(0, chatWindow.scrollHeight);
+            }
         }
         type();
     }
 
-    function scrollDown() { chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' }); }
-    function toggleSidebar() { 
-        document.getElementById('sidebar').classList.toggle('open'); 
-        document.getElementById('sidebar-overlay').style.display = document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none'; 
+    function appendBubble(role, text, id = '') {
+        const d = document.createElement('div');
+        d.className = `chat-bubble ${role}-bubble`;
+        d.innerHTML = `<div class="content" id="${id}">${role === 'user' ? text : marked.parse(text)}</div>`;
+        chatWindow.appendChild(d);
+        chatWindow.scrollTo(0, chatWindow.scrollHeight);
     }
-    function createNewChat() { 
-        chatWindow.innerHTML = '<div class="chat-bubble ai-bubble"><div class="content">Kirim pertanyaan cetek lu?</div></div>'; 
-        toggleSidebar(); 
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('sidebar-overlay').style.display = document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none';
     }
-    function handleFileUpload(input) { if (input.files[0]) alert("File " + input.files[0].name + " siap dikirim!"); }
 
     inputField.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
-    
-    renderHistory();
 </script>
 </body>
 </html>
