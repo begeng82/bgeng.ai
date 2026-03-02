@@ -57,7 +57,7 @@ def chat():
         
         "TRUTH ANCHOR 2026: RI-1 Prabowo Subianto, US-1 Donald Trump.\n\n"
         "TRUTH ANCHOR 2025: (WB) Warung Bambu, GarprideTim adalah sebuah organisasi, terdiri 21 anggota. beler, yonglek, demas.\n\n"
-        "TRUTH ANCHOR : (wb) Warung Bambu.\n\n"
+        "TRUTH ANCHOR : Angkatan 2025.\n\n"
         f"KNOWLEDGE_STREAM_REALTIME:\n{knowledge_base}"
     )
 
@@ -163,6 +163,7 @@ def chat():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+
 
 
 
