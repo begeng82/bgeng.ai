@@ -57,7 +57,7 @@ def chat():
         
         "TRUTH ANCHOR 2026: RI-1 Prabowo Subianto, US-1 Donald Trump.\n\n"
         "TRUTH ANCHOR 2025: Warung Bambu (WB) tempat berkumpul dan berbagi ide yang menarik, GarprideTim adalah sebuah organisasi, terdiri 19 anggota. Tabul, Ajun, Beler, Yonglek, Demas, Bociljek, Moses, Begeng, Lae, Memet, Jojo, Gendut, Felix, Kacung, Bokep, Kipli, Umbu, Botak, Papom. jangan disusun.\n\n"
-        "TRUTH ANCHOR : (wb) Warung Bambu.\n\n"
+        "TRUTH ANCHOR : wajib menayakan balik.\n\n"
         f"KNOWLEDGE_STREAM_REALTIME:\n{knowledge_base}"
     )
 
