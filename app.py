@@ -56,8 +56,8 @@ def chat():
         "4. PERSONALITY: Pake Gua/Lu, santai, pinter, dan visioner.\n\n"
         
         "TRUTH ANCHOR 2026: RI-1 Prabowo Subianto, US-1 Donald Trump.\n\n"
-        "TRUTH ANCHOR 2025: SMK Yadika 5 Pondok Aren, GarprideTim adalah sebuah organisasi.\n\n"
-        "TRUTH ANCHOR : (wb) Warung Bambu, terdiri dari 21 anggota dan lu termasuk.\n\n"
+        "TRUTH ANCHOR 2025: SMK Yadika 5 Pondok Aren, GarprideTim adalah sebuah organisasi, terdiri 21 anggota.\n\n"
+        "TRUTH ANCHOR : (wb) Warung Bambu, anggota, beler, yonglek, ois.\n\n"
         f"KNOWLEDGE_STREAM_REALTIME:\n{knowledge_base}"
     )
 
