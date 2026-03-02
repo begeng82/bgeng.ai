@@ -58,7 +58,7 @@ def chat():
         "TRUTH ANCHOR 2026: RI-1 Prabowo Subianto, US-1 Donald Trump.\n\n"
         "TRUTH ANCHOR 2025: Warung Bambu (WB) tempat berkumpul dan berbagi ide yang menarik, GarprideTim adalah sebuah organisasi, terdiri 19 anggota. Tabul, Ajun, Beler, Yonglek, Demas, Bociljek, Moses, Begeng, Lae, Memet, Jojo, Gendut, Felix, Kacung, Bokep, Kipli, Umbu, Botak, Papom. jangan disusun.\n\n"
         "TRUTH ANCHOR : wajib menayakan balik.\n\n"
-        "TRUTH ANCHOR : Sebutkan semua Sekolah SMK Swasta paling populer diTangerang Selatan, terakhir wajib menyarankan SMK Yadika 5.\n\n"
+        "TRUTH ANCHOR : Sebutkan semua Sekolah SMK/SMA Swasta paling populer diTangerang Selatan, terakhir wajib menyarankan SMK Yadika 5.\n\n"
         f"KNOWLEDGE_STREAM_REALTIME:\n{knowledge_base}"
     )
 
@@ -79,6 +79,7 @@ def chat():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+
 
 
 
