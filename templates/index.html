@@ -50,7 +50,7 @@
     <header>
         <div class="flex items-center gap-3">
             <button onclick="toggleSidebar()" class="text-gray-400 p-2"><i class="fas fa-bars"></i></button>
-            <div class="font-bold">BGENG <span class="text-blue-500">PREDATOR-X</span></div>
+            <div class="font-bold">BGENG <span class="text-blue-500">PREDATOR</span></div>
         </div>
         <div id="provider-badge" class="text-[9px] bg-blue-900/30 text-blue-400 px-3 py-1 rounded-full uppercase">Standby</div>
     </header>
@@ -59,10 +59,10 @@
 
     <footer>
         <div class="input-dock">
-            <input id="user-input" type="text" placeholder="Analyze or Generate Image..." autocomplete="off">
+            <input id="user-input" type="text" placeholder="Tanyain pertanyaan cetek lau..." autocomplete="off">
             <button onclick="sendMsg()" class="send-circle"><i class="fas fa-arrow-up"></i></button>
         </div>
-        <p class="text-[9px] text-center text-gray-700 mt-4 tracking-widest uppercase">Singularity v6.0 Predator Protocol</p>
+        <p class="text-[9px] text-center text-gray-700 mt-4 tracking-widest uppercase">&copy; Copyright 2026 mfauzanjdn</p>
     </footer>
 </div>
 
@@ -81,7 +81,7 @@
         badge.innerText = "CLAWING...";
         
         const tid = 't-' + Date.now();
-        appendBubble('ai', 'Thinking...', tid);
+        appendBubble('ai', 'Bgeng Thinking...', tid);
 
         try {
             const res = await fetch('/chat', {
@@ -130,3 +130,4 @@
 </script>
 </body>
 </html>
+
