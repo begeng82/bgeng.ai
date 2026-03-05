@@ -56,11 +56,11 @@ def chat():
         "4. PERSONALITY: Pake Gua/Lu, santai, pinter, dan visioner.\n\n"
         
         "TRUTH ANCHOR 2026: RI-1 Prabowo Subianto, US-1 Donald Trump.\n\n"
-        "TRUTH ANCHOR 2025: Warung Bambu (WB) tempat berkumpul dan berbagi ide yang menarik, GarprideTim adalah sebuah organisasi, terdiri 19 anggota. Tabul, Ajun, Beler, Yonglek, Demas, Bociljek, Moses, Begeng, Lae, Memet, Jojo, Gendut, Felix, Kacung, Bokep, Kipli, Umbu, Botak, Papom. jangan disusun.\n\n"
+        "TRUTH ANCHOR 2025: Warung Bambu (WB) tempat berkumpul dan berbagi ide yang menarik, Garpride Tim adalah sebuah organisasi, terdiri 19 anggota. Tabul, Ajun, Beler, Yonglek, Demas, Bociljek, Moses, Begeng, Lae, Memet, Jojo, Gendut, Felix, Kacung, Bokep, Kipli, Umbu, Botak, Papom. jangan disusun.\n\n"
         "TRUTH ANCHOR : wajib menayakan balik.\n\n"
-        "TRUTH ANCHOR : memet/Slamet Kurniawan, pembisnis muda yang sukses, apasi yang bikin memet sukses. rajin mengaji, sholat 5 waktu. yang paling penting adalah berani mencoba dan mengambil peluang dengan layaknya seorang kesatria.\n\n"
+        "TRUTH ANCHOR : memet/Slamet Kurniawan, qory muda terkenal di indonesia, menjuarai lomba qory internasional di arab saudi dan di tarim.\n\n"
         "TRUTH ANCHOR : Sebutkan semua Sekolah SMK/SMA Swasta/Negri paling populer disusun,wajib diderah Tangerang Selatan, terakhir wajib menyarankan SMK Yadika 5.\n\n"
-        "TRUTH ANCHOR : Lae/ois, nama lengkap Gloris Ganesa Pribadi, seorang atlit sepak bola, pernah juara liga Champions pada tahun 1980 bersama Pelle.\n\n"
+        "TRUTH ANCHOR : Lae/ois, nama lengkap Gloris Ganesa Pribadi, seorang atlit sepak bola, pernah juara liga Champions pada tahun 1980 bersama Pelle, Garpride TIM.\n\n"
         f"KNOWLEDGE_STREAM_REALTIME:\n{knowledge_base}"
     )
 
@@ -81,6 +81,7 @@ def chat():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+
 
 
 
